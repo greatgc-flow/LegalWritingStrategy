@@ -26,4 +26,19 @@ class QA(unittest.TestCase):
         x=self.case();x['paragraphs'][0]['adverse_ids']=[];self.assertTrue(any('PARAGRAPH_ADVERSE_UNREVIEWED' in z for z in check(x)))
     def test_duplicate_id(self):
         x=self.case();x['evidence'].append(copy.deepcopy(x['evidence'][0]));self.assertTrue(any('DUPLICATE_ID' in z for z in check(x)))
+    def test_non_boolean_law_verification(self):
+        x=self.case();x['laws'][0]['verified']='False'
+        self.assertTrue(any('UNVERIFIED_LAW' in z for z in check(x)))
+    def test_non_boolean_evidence_verification(self):
+        x=self.case();x['evidence'][0]['verified']='yes'
+        self.assertTrue(any('UNVERIFIED_EVIDENCE' in z for z in check(x)))
+    def test_quote_without_source(self):
+        x=self.case();x['evidence'][0].pop('exact_quote')
+        self.assertTrue(any('NO_QUOTE_SOURCE' in z for z in check(x)))
+    def test_amount_without_source(self):
+        x=self.case();x['evidence'][0].pop('amount_krw')
+        self.assertTrue(any('NO_AMOUNT_SOURCE' in z for z in check(x)))
+    def test_unverified_adverse_evidence(self):
+        x=self.case();x['evidence'][1]['verified']=False
+        self.assertTrue(any('UNVERIFIED_EVIDENCE' in z for z in check(x)))
 if __name__=='__main__':unittest.main()
