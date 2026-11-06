@@ -1,0 +1,73 @@
+{
+  "scope": "100% fictional training example; not legal advice",
+  "issues": [
+    {
+      "id": "ISS-01",
+      "rule_ids": [
+        "LAW-01"
+      ],
+      "fact_ids": [
+        "FACT-01"
+      ],
+      "adverse_ids": [
+        "ADV-01"
+      ]
+    }
+  ],
+  "laws": [
+    {
+      "id": "LAW-01",
+      "verified": true,
+      "source": "synthetic training rule - no legal force"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV-01",
+      "verified": true,
+      "exact_quote": "입금 확인 예정",
+      "amount_krw": 2500000
+    },
+    {
+      "id": "EV-02",
+      "verified": true,
+      "exact_quote": "아직 입금 확인 불가"
+    }
+  ],
+  "facts": [
+    {
+      "id": "FACT-01",
+      "evidence_ids": [
+        "EV-01"
+      ],
+      "status": "VERIFIED_SOURCE",
+      "text": "A wrote a message; transfer itself is not established"
+    }
+  ],
+  "adverse": [
+    {
+      "id": "ADV-01",
+      "evidence_id": "EV-02",
+      "strongest_reading": "transfer not yet confirmed",
+      "admitted_fact": "No independent bank confirmation",
+      "response": "request transaction record; do not claim transfer proven",
+      "verification_state": "VERIFIED_SOURCE"
+    }
+  ],
+  "paragraphs": [
+    {
+      "id": "PAR-01",
+      "fact_ids": [
+        "FACT-01"
+      ],
+      "evidence_ids": [
+        "EV-01"
+      ],
+      "quote": "입금 확인 예정",
+      "amount_krw": 2500000,
+      "adverse_ids": [
+        "ADV-01"
+      ]
+    }
+  ]
+}

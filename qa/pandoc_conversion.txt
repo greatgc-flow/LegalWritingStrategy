@@ -1,0 +1,1 @@
+pandoc: /mnt/data/LegalWriting_MasterKit_2026-11-06/templates/_A4_reference.docx: withBinaryFile: invalid argument (cannot encode character '\65533')

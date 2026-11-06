@@ -1,0 +1,35 @@
+{
+  "tool": "legal_qa.py",
+  "scope": "deterministic cross-file checks only",
+  "legal_merits": "NOT_TESTED",
+  "original_authenticity": "NOT_TESTED",
+  "docx": {
+    "paragraphs": 15,
+    "tables": 1,
+    "margins_mm": {
+      "top": 28.0,
+      "bottom": 27.0,
+      "left": 22.0,
+      "right": 22.0
+    },
+    "normal_font_pt": 12.0,
+    "normal_line_spacing": 1.5,
+    "warning": "Styles only; other runs/sections and output render require inspection"
+  },
+  "pdf": [
+    {
+      "page": 1,
+      "size_mm": [
+        210.0,
+        297.0
+      ],
+      "text_chars": 593,
+      "fonts": [
+        "BAAAAA+NotoSerifCJKkr-Regular",
+        "CAAAAA+NotoSans-Bold",
+        "DAAAAA+UnDotum-Bold",
+        "EAAAAA+Carlito-Bold"
+      ]
+    }
+  ]
+}

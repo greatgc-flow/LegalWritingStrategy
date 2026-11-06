@@ -1,0 +1,12 @@
+test_amount_mismatch (test_qa.TestLegalQA.test_amount_mismatch) ... ok
+test_clean (test_qa.TestLegalQA.test_clean) ... ok
+test_missing_evidence_reference (test_qa.TestLegalQA.test_missing_evidence_reference) ... ok
+test_missing_fact (test_qa.TestLegalQA.test_missing_fact) ... ok
+test_missing_fact_evidence_link (test_qa.TestLegalQA.test_missing_fact_evidence_link) ... ok
+test_quote_mismatch (test_qa.TestLegalQA.test_quote_mismatch) ... ok
+test_unverified_evidence (test_qa.TestLegalQA.test_unverified_evidence) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+OK

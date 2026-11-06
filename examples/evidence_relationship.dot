@@ -1,0 +1,8 @@
+digraph Evidence {
+  rankdir=LR;
+  graph [fontname="Noto Sans CJK KR"];
+  node [shape=box, fontname="Noto Sans CJK KR"];
+  "EV-001 문자 원본" -> "FACT-001 문자를 발송" [label="직접 확인"];
+  "FACT-001 문자를 발송" -> "추론: 실제 송금 실행" [style=dashed, label="미검증, 단정 금지"];
+  "EV-002 계좌 원본" -> "FACT-002 이체 기록" [label="원본 확인"];
+}

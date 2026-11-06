@@ -1,0 +1,25 @@
+{
+  "effective_date": "2026-11-06",
+  "jurisdiction": "KR",
+  "civil": {
+    "authority": "민사소송규칙 제4조 (특별한 사정 없는 경우)",
+    "paper": "A4 portrait",
+    "margin_mm": {"top": 45, "bottom": 30, "left": 20, "right": 20},
+    "body_pt_min": 12,
+    "line_spacing": ">=1.5 lines OR 200% in target editor",
+    "font_preference": ["Malgun Gothic", "Noto Sans CJK KR", "Source Han Sans KR"]
+  },
+  "criminal": {
+    "authority": "접수기관 공식 서식/지침 우선; 민사소송규칙 제4조 자동 직접적용 금지",
+    "illustrative_body_pt": 12,
+    "illustrative_margin_mm": {"top": 25, "bottom": 25, "left": 22, "right": 22}
+  },
+  "common": {
+    "title_pt": 16,
+    "heading1_pt": 14,
+    "heading2_pt": 12,
+    "avoid_text_as_image": true,
+    "pdf_font_check_required": true,
+    "render_visual_qa_required": true
+  }
+}

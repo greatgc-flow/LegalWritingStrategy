@@ -1,0 +1,6 @@
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+BAAAAA+NotoSansCJKkr-Regular         Type 1            Builtin          yes yes yes    103  0
+CAAAAA+NotoSans-Bold                 TrueType          WinAnsi          yes yes yes    108  0
+DAAAAA+UnDotum-Bold                  TrueType          WinAnsi          yes yes yes     98  0
+EAAAAA+Carlito-Bold                  TrueType          WinAnsi          yes yes yes     93  0

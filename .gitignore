@@ -1,0 +1,13 @@
+# Local-only artifacts and private case files
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+*.log
+*.tmp
+.DS_Store
+private/
+secrets/
+case_data/
+*_private.*

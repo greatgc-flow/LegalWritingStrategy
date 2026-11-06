@@ -1,0 +1,62 @@
+{
+  "tool_catalog_version": "5.0",
+  "purpose": "commands only; not proof installed",
+  "entries": [
+    {
+      "id": "pandoc",
+      "role": "Markdown to DOCX",
+      "verify": "pandoc --version",
+      "command_example": "pandoc input.md -o output.docx",
+      "source": "https://pandoc.org/installing.html"
+    },
+    {
+      "id": "libreoffice",
+      "role": "DOCX PDF render",
+      "verify": "soffice --version",
+      "command_example": "soffice --headless --convert-to pdf --outdir out input.docx",
+      "source": "https://www.libreoffice.org/download/"
+    },
+    {
+      "id": "pymupdf",
+      "role": "PDF text/page check",
+      "verify": "python -c \"import fitz;print(fitz.__doc__[:15])\"",
+      "command_example": "python scripts/legal_qa.py --pdf draft.pdf",
+      "source": "https://pymupdf.readthedocs.io/"
+    },
+    {
+      "id": "python-docx",
+      "role": "DOCX generator",
+      "verify": "python -c \"import docx; print(docx.__version__)\"",
+      "command_example": "python scripts/make_templates.py",
+      "source": "https://python-docx.readthedocs.io/"
+    },
+    {
+      "id": "graphviz",
+      "role": "evidence graph",
+      "verify": "dot -V",
+      "command_example": "dot -Tsvg examples/evidence_relationship.dot -o graph.svg",
+      "source": "https://graphviz.org/download/"
+    },
+    {
+      "id": "mermaid-cli",
+      "role": "process diagrams",
+      "verify": "mmdc -h",
+      "command_example": "mmdc -i examples/revision_pipeline.mmd -o diagram.svg",
+      "source": "https://github.com/mermaid-js/mermaid-cli"
+    },
+    {
+      "id": "matplotlib",
+      "role": "data chart",
+      "verify": "python -c \"import matplotlib\"",
+      "command_example": "python examples/plot_transaction.py",
+      "source": "https://matplotlib.org/"
+    },
+    {
+      "id": "zotero",
+      "role": "research citations",
+      "verify": "Zotero application/Word plugin UI check",
+      "command_example": "Word Zotero Add/Edit Citation",
+      "source": "https://www.zotero.org/support/word_processor_integration"
+    }
+  ]
+}

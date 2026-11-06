@@ -1,0 +1,23 @@
+﻿Requirement_ID,사용자요구,Primary_Domain(s),가이드_위치,수정단계,검증규칙,상태
+R01,문서소통,"D05,D06,D07","§2,§6,§7","P4,P5,P8","V4,H6",covered
+R02,심리설득,"D04,D05,D12","§2,§5,§6","P3,P5,P8","V3,H7",covered
+R03,참고자료 위치,D08,§7.2,"P6,P8","V2,H5",covered
+R04,목차설계,D06,§7.1,"P4,P8","V4,H6",covered
+R05,문체,D07,"§6.2,§6.3","P5,P8","V5,H6",covered
+R06,다이어그램 차트 강조,D09,§8,"P6,P7,P8","V2,H8",covered
+R07,기존문서 단계별 AI,D10,"§9,§10",P0-P8,"V1-V5,H1-H8",covered
+R08,도구와 설치,D11,§11,"P0,P7","H5,H8",covered-not-executed
+R09,한국 서식/금지,D01,§3,"P0,P7,P8","V1,H5",covered-case-pending
+R10,법리 적절성,D03,§5.1,"P2,P8","V1,V3,H3",covered-case-pending
+R11,논리 적절성,D04,§5.2,"P3,P8","V3,H4",covered
+R12,메타성 제거,D07,§6.2,"P5,P8",V5,covered
+R13,사람다운 문체,D07,§6.2,"P5,P8",V5,covered
+R14,단어문장문단구조,"D06,D07","§6,§7","P4,P5,P8","V4,V5,H6",covered
+R15,두괄식 긍정/능동형,D07,§6.2,"P5,P8",V5,covered
+R16,시각 디테일·표 셀·줄바꿈,"D09,D11","§8,§11","P6,P7,P8",H8,covered-not-rendered
+R17,경찰검사법관 인용성,"D05,D04","§3.2,§5.3","P3,P5,P8","V3,V5",covered-case-pending
+R18,원본 증거 보존,"D02,D10","§4,§9","P0,P1,P8","V2,H4",covered
+R19,민형사 경과규정,"D01,D03","§3,§5","P0,P2,P8","V1,H3",covered-case-pending
+R20,종횡 재귀 완결도,D12,"§12,§13",P8,"V1-V5,H1-H8",covered
+R21,점수 보고,D12,§13,P8,G1-G7,covered
+R22,개인정보 보안 및 승인,"D10,D11,D12","§9,§11,§13","P0,P7,P8","G6,G7",covered
