@@ -86,3 +86,9 @@ python scripts/legal_qa.py --record examples/synthetic_case.json
 - 작업중 버전 변경 시 `docs/00_최종_통합마스터_V5.md`를 기준으로 다른 문서가 참조하는 파일 경로를 점검하고 QA를 실행합니다.
 - [`MANIFEST_SHA256.txt`](MANIFEST_SHA256.txt)는 배포 자료 파일의 체크섬이며, 표준 Git 커밋 SHA와는 다릅니다.
 - 자세한 차이: [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
+
+## 8. 2026-11-07 상호 재귀적 MECE·종횡 감사
+
+- [감사보고서](docs/18_상호재귀_MECE_종횡감사_20261107.md): 요구 → 전략 → 원증거 → 문단/첨부 → QA의 정·역방향 추적과 H1~H8의 가로 연결, 미완료 검증을 기록했습니다.
+- 원문 출처가 없는 인용·금액과 잘못된 검증 플래그를 탐지하는 테스트를 추가했습니다. PR에서 `Structural and synthetic QA`가 실행됩니다.
+- 자체 설계평가 **88/100점**은 승소율·기소율이나 실제 제출 적합성 점수가 아닙니다. Windows·HWP 현장 검증, 문헌 전수 원문 평가, 사건별 법률·원증거 검증은 별도입니다.
