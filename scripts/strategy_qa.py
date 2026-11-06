@@ -28,15 +28,16 @@ def check(x):
                 if v not in d[table]:add('MISSING_REF',f'{id_}:{k}:{v}')
         if not i.get('adverse_ids'):add('NO_ADVERSE_REVIEW',id_)
     for id_,l in d['laws'].items():
-        if not l.get('verified'): add('UNVERIFIED_LAW',id_)
+        if l.get('verified') is not True: add('UNVERIFIED_LAW',id_)
     for id_,f in d['facts'].items():
         if not f.get('evidence_ids'):add('NO_EVIDENCE_LINK',id_)
         for k in f.get('evidence_ids',[]):
             if k not in d['evidence']:add('MISSING_REF',f'{id_}:evidence:{k}')
-            elif not d['evidence'][k].get('verified'):add('UNVERIFIED_EVIDENCE',f'{id_}:{k}')
+            elif d['evidence'][k].get('verified') is not True:add('UNVERIFIED_EVIDENCE',f'{id_}:{k}')
     for id_,a in d['adverse'].items():
         k=a.get('evidence_id')
         if k not in d['evidence']:add('MISSING_REF',f'{id_}:evidence:{k}')
+        elif d['evidence'][k].get('verified') is not True:add('UNVERIFIED_EVIDENCE',f'{id_}:{k}')
         for name in ['strongest_reading','admitted_fact','response']:
             if not str(a.get(name,'')).strip():add('ADVERSE_FIELD_EMPTY',f'{id_}:{name}')
         if a.get('verification_state') != 'VERIFIED_SOURCE':add('ADVERSE_UNVERIFIED',id_)
@@ -47,10 +48,12 @@ def check(x):
         if not p.get('adverse_ids'): add('PARAGRAPH_ADVERSE_UNREVIEWED',id_)
         if 'quote' in p:
             valid=[d['evidence'].get(z,{}).get('exact_quote') for z in p.get('evidence_ids',[])]
-            if valid and p['quote'] not in valid:add('QUOTE_MISMATCH',id_)
+            if not any(isinstance(v,str) and v for v in valid):add('NO_QUOTE_SOURCE',id_)
+            elif p['quote'] not in valid:add('QUOTE_MISMATCH',id_)
         if 'amount_krw' in p:
             valid=[d['evidence'].get(z,{}).get('amount_krw') for z in p.get('evidence_ids',[]) if 'amount_krw' in d['evidence'].get(z,{})]
-            if valid and p['amount_krw'] not in valid:add('AMOUNT_MISMATCH',id_)
+            if not valid:add('NO_AMOUNT_SOURCE',id_)
+            elif p['amount_krw'] not in valid:add('AMOUNT_MISMATCH',id_)
     return sorted(set(faults))
 
 def main():
