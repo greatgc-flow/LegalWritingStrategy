@@ -98,13 +98,10 @@ class Audit:
 
 
 def single_ssot(a):
-    documents = sorted(p for p in (a.root / 'docs').rglob('*.md')
-                       if 'archive' not in p.relative_to(a.root / 'docs').parts)
+    documents = sorted((a.root / 'docs').rglob('*.md'))
     problems, contents = [], []
     for path in a.files():
         relative = path.relative_to(a.root)
-        if relative.as_posix().startswith('docs/archive/'):
-            continue
         if any(re.search(r'(?:^|[_-])V[34](?:[._-]|$)', part, re.I) for part in relative.parts):
             problems.append('obsolete name: ' + relative.as_posix())
     for path in documents:
@@ -278,6 +275,23 @@ def rule_test_mapping(a):
 ITEM_RESULTS = {'PASS', 'FAIL', 'REVIEW', 'NOT_TESTED'}  # per-check results, not final states (docs/18)
 
 
+def markdown_tables(text):
+    """Yield (line number, header cells, row cells) for ordinary pipe tables."""
+    lines = text.splitlines()
+    def cells(line):
+        return [cell.strip() for cell in re.split(r'(?<!\\)\|', line.strip().strip('|'))]
+    for index in range(len(lines)-1):
+        if not lines[index].lstrip().startswith('|'):
+            continue
+        headers, separator = cells(lines[index]), cells(lines[index+1])
+        if len(headers) != len(separator) or not all(re.fullmatch(r':?-+:?', v) for v in separator):
+            continue
+        number = index+2
+        while number < len(lines) and lines[number].lstrip().startswith('|'):
+            yield number+1, headers, cells(lines[number])
+            number += 1
+
+
 def final_states(a):
     problems, found = [], set()
     marker = re.compile(r'상태|판정|결과|등급')
@@ -293,7 +307,20 @@ def final_states(a):
         relative = path.relative_to(a.root).as_posix()
         content = relative.split('/')[0] in ('docs', 'qa', 'prompts')
         headings = {}
-        lines = a.text(relative).splitlines()
+        text = a.text(relative)
+        lines = text.splitlines()
+        if content:
+            for number, headers, cells in markdown_tables(text):
+                for index, header in enumerate(headers):
+                    if re.search(r'결과|판정|상태', header):
+                        value = cells[index].strip('`* ') if index < len(cells) else ''
+                        tag = (not value or re.fullmatch(r'[\w/.-]+', value) or
+                               re.fullmatch(r'[A-Z0-9_/ .()-]+', value) or
+                               re.match(r'^[A-Z][A-Z0-9_]*\s*\(', value) or
+                               re.match(r'^\d+\s*/\s*\d+', value))
+                        identifier = value in nonstates or re.fullmatch(r'[A-Z]{1,4}\d+', value)
+                        if tag and not identifier and value not in ITEM_RESULTS | FINAL_STATES:
+                            problems.append(f'invalid result cell: {relative}:{number}: {value}')
         for number, line in enumerate(lines, 1):
             if line.startswith('#'):
                 level = len(line) - len(line.lstrip('#'))
@@ -353,20 +380,25 @@ def grade_scope(a):
 
 
 def statute_citations(a):
-    citation = re.compile(r'([가-힣]+(?:법|규칙|령))」?\s*제\s*(\d+)\s*조(?:\s*의\s*(\d+))?')
+    article = r'제\s*\d+\s*조(?:\s*의\s*\d+)?'
+    citation = re.compile(r'([가-힣]+(?:법|규칙|령))」?\s*(' + article + r'(?:\s*[/·,]\s*' + article + r')*)')
     citations = {}
-    for directory in ('docs', 'prompts'):
-        for path in sorted((a.root / directory).rglob('*.md')):
+    for directory, pattern in [('docs', '*.md'), ('prompts', '*.md'), ('qa', '*.md'), ('config', '*.json')]:
+        for path in sorted((a.root / directory).rglob(pattern)):
             relative = path.relative_to(a.root).as_posix()
-            for law, number, sub in citation.findall(a.text(relative)):
-                article = f'제{number}조' + (f'의{sub}' if sub else '')
-                citations.setdefault((law, article), set()).add(relative)
+            for law, articles in citation.findall(a.text(relative)):
+                for value in re.findall(article, articles):
+                    citations.setdefault((law, re.sub(r'\s+', '', value)), set()).add(relative)
     return citations
 
 
 def statute_ledger(a):
     available = {}
+    problems = []
     for row in a.rows('references/statute_ledger.csv'):
+        if re.search(r'not\s+reproduced|absent|재현\s*안', row.get('note', ''), re.I):
+            problems.append(f'not reproduced: {row.get("law")} {row.get("article")}')
+            continue
         try:
             date.fromisoformat(row.get('checked_on', ''))
         except ValueError:
@@ -374,7 +406,6 @@ def statute_ledger(a):
         if row.get('status') == 'TEXT_MATCH':
             key = row.get('law'), row.get('article')
             available.setdefault(key, set()).update(part.strip() for part in row.get('cited_in', '').split(';') if part.strip())
-    problems = []
     for (law, article), files in sorted(statute_citations(a).items()):
         if (law, article) not in available:
             problems.append(f'missing TEXT_MATCH/date: {law} {article}')
@@ -395,7 +426,56 @@ def transfer_limits(a):
 
 
 def package_integrity(a):
-    return a.package_issues()
+    return a.package_issues() + tool_catalog(a)
+
+
+def tool_catalog(a):
+    """Validate catalog structure and declared tools in documentation tables."""
+    entries = json.loads(a.text('config/tool_catalog.json')).get('entries', [])
+    if not isinstance(entries, list) or not entries:
+        return ['invalid/empty tool catalog entries']
+    problems, ids, aliases = [], set(), {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            problems.append('invalid tool catalog entry')
+            continue
+        name = entry.get('id', '')
+        if not isinstance(name, str) or not re.fullmatch(r'[a-z][a-z0-9]*(?:-[a-z0-9]+)*', name):
+            problems.append('invalid tool id: ' + str(name))
+            continue
+        if name in ids:
+            problems.append('duplicate tool id: ' + name)
+        ids.add(name)
+        if not isinstance(entry.get('verify'), str) or not entry['verify'].strip():
+            problems.append('missing tool verify command: ' + name)
+        names = entry.get('aliases', [])
+        if not isinstance(names, list) or any(not isinstance(v, str) or not v.strip() for v in names):
+            problems.append('invalid tool aliases: ' + name)
+            names = []
+        for alias in [name, *names]:
+            key = alias.casefold()
+            if key in aliases and aliases[key] != name:
+                problems.append('ambiguous tool alias: ' + alias)
+            aliases[key] = name
+    for path in sorted((a.root / 'docs').rglob('*.md')):
+        relative = path.relative_to(a.root).as_posix()
+        text = a.text(relative)
+        mentions = []
+        for number, headers, cells in markdown_tables(text):
+            for index, header in enumerate(headers):
+                if ('도구' in header or re.search(r'\btools?\b', header, re.I)) and index < len(cells):
+                    mentions.append((number, cells[index]))
+        for number, line in enumerate(text.splitlines(), 1):
+            mentions.extend((number, name) for name in re.findall(
+                r'(?:도구|tool)(?:\s*ID)?\s*[:=]\s*`?([A-Za-z][A-Za-z0-9_.-]*)', line, re.I))
+        for number, names in mentions:
+            names = re.sub(r'https?://[^\s;]+|`[^`]*[/\\][^`]*`', '', names)
+            for alias in sorted(aliases, key=lambda v: (-len(v), v)):
+                names = re.sub(r'(?<![\w-])' + re.escape(alias) + r'(?![\w-])', '', names, flags=re.I)
+            for name in re.findall(r'[A-Za-z][A-Za-z0-9_.-]*', names):
+                if name not in {'CLI', 'LTS', 'HWP', 'HWPX', 'Markdown', 'diff'}:
+                    problems.append(f'uncatalogued doc tool: {relative}:{number}: {name}')
+    return sorted(set(problems))
 
 
 def ci_matrix(a):
@@ -430,9 +510,12 @@ def dependencies(a):
         result = a.run(['-m', 'pip', 'install', '--dry-run', '--upgrade', '-r', 'requirements.txt',
                         '--disable-pip-version-check', '--retries', '0', '--timeout', '12'], timeout=120)
     except (OSError, subprocess.TimeoutExpired):
-        problems.append('UNTESTED: resolver unavailable')
+        problems.append('NOT_TESTED: resolver unavailable')
         return problems
-    if result.returncode:
+    if result.returncode and re.search(r'Permission denied|Access is denied|WinError 5',
+                                       (result.stdout or '') + (result.stderr or ''), re.I):
+        problems.append('NOT_TESTED: resolver filesystem access denied')
+    elif result.returncode:
         problems.append('requirements.txt does not resolve on this interpreter: ' + result.stdout.strip()[-300:])
     elif re.search(r'^Would install ', result.stdout, re.M):
         problems.append('not latest resolvable: ' + re.search(r'^Would install .*', result.stdout, re.M)[0])
@@ -524,7 +607,7 @@ def checked(predicate, a):
         return sorted(set(predicate(a)))
     except (OSError, ValueError, KeyError, TypeError, StopIteration, SyntaxError,
             subprocess.TimeoutExpired, zipfile.BadZipFile) as error:
-        return ['UNTESTED: ' + type(error).__name__ + ': ' + str(error).replace(str(a.root), '<root>')]
+        return ['NOT_TESTED: ' + type(error).__name__ + ': ' + str(error).replace(str(a.root), '<root>')]
 
 
 def evaluate(a):

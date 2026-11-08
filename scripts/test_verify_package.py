@@ -26,7 +26,7 @@ class ManifestQA(unittest.TestCase):
         # Only fixture data, never the repository's protected documents/register.
         self.write('docs/00_최종_통합마스터_V5.md', b'Synthetic master\n')
         self.write('references/research_register.csv',
-                   ('id\n' + ''.join(f'SYNTH-{i}\n' for i in range(42))).encode())
+                   ('id\n' + ''.join(f'SYNTH-{i}\n' for i in range(53))).encode())
         for stage, count in (('P', 9), ('S', 7)):
             for number in range(count):
                 directory = 'prompts/strategy' if stage == 'S' else 'prompts'
@@ -102,6 +102,28 @@ class ManifestQA(unittest.TestCase):
         contents = (self.root / 'MANIFEST_SHA256.txt').read_text()
         self.assertNotIn('ignored', contents)
         self.assertEqual(self.run_package()[0], 0)
+
+    def test_bare_repo_filenames_must_exist(self):
+        self.write('README.md', b'`absent_case.py`, `absent_case.ps1`, `absent_case.md`\n')
+        self.run_package('--write-manifest')
+        status, output = self.run_package()
+        self.assertEqual(status, 1)
+        for name in ('absent_case.py', 'absent_case.ps1', 'absent_case.md'):
+            self.assertIn('BROKEN_REPO_PATH: README.md:1:' + name, output)
+
+    def test_bare_filename_may_resolve_anywhere_in_repo(self):
+        self.write('scripts/present_case.py', b'# synthetic\n')
+        self.write('README.md', b'`present_case.py`; https://example.org/remote_only.py\n')
+        self.run_package('--write-manifest')
+        self.assertEqual(self.run_package()[0], 0)
+
+    def test_research_baseline_is_53(self):
+        self.write('references/research_register.csv',
+                   ('id\n' + ''.join(f'SYNTH-{i}\n' for i in range(52))).encode())
+        self.run_package('--write-manifest')
+        status, output = self.run_package()
+        self.assertEqual(status, 1)
+        self.assertIn('RESEARCH_BELOW_BASELINE: 52', output)
 
 
 if __name__ == '__main__':

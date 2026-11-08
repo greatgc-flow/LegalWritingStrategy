@@ -14,14 +14,20 @@
       "role": "DOCX PDF render",
       "verify": "soffice --version",
       "command_example": "soffice --headless --convert-to pdf --outdir out input.docx",
-      "source": "https://www.libreoffice.org/download/"
+      "source": "https://www.libreoffice.org/download/",
+      "aliases": [
+        "soffice"
+      ]
     },
     {
       "id": "pymupdf",
       "role": "PDF text/page check",
       "verify": "python -c \"import fitz;print(fitz.__doc__[:15])\"",
       "command_example": "python scripts/legal_qa.py --pdf draft.pdf",
-      "source": "https://pymupdf.readthedocs.io/"
+      "source": "https://pymupdf.readthedocs.io/",
+      "aliases": [
+        "fitz"
+      ]
     },
     {
       "id": "python-docx",
@@ -35,14 +41,22 @@
       "role": "evidence graph",
       "verify": "dot -V",
       "command_example": "dot -Tsvg examples/evidence_relationship.dot -o graph.svg",
-      "source": "https://graphviz.org/download/"
+      "source": "https://graphviz.org/download/",
+      "aliases": [
+        "dot"
+      ]
     },
     {
       "id": "mermaid-cli",
       "role": "process diagrams",
       "verify": "mmdc -h",
       "command_example": "mmdc -i examples/revision_pipeline.mmd -o diagram.svg",
-      "source": "https://github.com/mermaid-js/mermaid-cli"
+      "source": "https://github.com/mermaid-js/mermaid-cli",
+      "aliases": [
+        "Mermaid CLI",
+        "Mermaid",
+        "mmdc"
+      ]
     },
     {
       "id": "matplotlib",
@@ -77,7 +91,53 @@
       "role": "Inspect PDF font metadata and embedding; not rendering proof",
       "verify": "pdffonts -v",
       "command_example": "pdffonts input.pdf",
-      "source": "https://cgit.freedesktop.org/poppler/poppler/tree/utils/pdffonts.cc"
+      "source": "https://cgit.freedesktop.org/poppler/poppler/tree/utils/pdffonts.cc",
+      "aliases": [
+        "Poppler",
+        "pdffonts"
+      ]
+    },
+    {
+      "id": "python",
+      "verify": "python --version",
+      "role": "Run repository scripts in an isolated environment",
+      "source": "https://www.python.org/",
+      "aliases": [
+        "Python"
+      ]
+    },
+    {
+      "id": "git",
+      "verify": "git --version",
+      "role": "Read diffs and preserve version history",
+      "source": "https://git-scm.com/"
+    },
+    {
+      "id": "nodejs",
+      "verify": "node --version",
+      "role": "Runtime for Mermaid CLI",
+      "source": "https://nodejs.org/",
+      "aliases": [
+        "Node.js",
+        "Node"
+      ]
+    },
+    {
+      "id": "word",
+      "verify": "powershell -NoProfile -Command \"Get-Command WINWORD.EXE -ErrorAction Stop\"",
+      "role": "Interactive comparison and final document editing; visual QA remains separate",
+      "source": "https://support.microsoft.com/word"
+    },
+    {
+      "id": "hancom-hwp",
+      "verify": "powershell -NoProfile -Command \"Get-Command Hwp.exe -ErrorAction Stop\"",
+      "role": "Interactive HWP/HWPX editing; actual device rendering remains separate",
+      "source": "https://www.hancom.com/",
+      "aliases": [
+        "한글",
+        "HWP",
+        "HWPX"
+      ]
     }
   ]
 }

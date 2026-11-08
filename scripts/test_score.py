@@ -282,6 +282,92 @@ class ScoreTests(unittest.TestCase):
         self.write(relative, self.audit.text(relative).replace('python scripts/score.py', 'echo omitted'))
         self.assert_broken('A5.ci_matrix')
 
+    def test_legacy_and_duplicates_cannot_hide_in_archive(self):
+        master=next((self.root/'docs').glob('00_*.md'))
+        relative='docs/archive/legacy_V4.md'
+        self.write(relative, master.read_text(encoding='utf-8'))
+        problems=score.single_ssot(self.audit)
+        self.assertIn('obsolete name: '+relative, problems)
+        self.assertTrue(any(p.startswith('90% duplicate:') and relative in p for p in problems))
+
+    def test_negative_ledger_notes_override_text_match(self):
+        for note in ('prior TEXT_MATCH not reproduced', 'local source absent', '원문 재현 안 됨'):
+            with self.subTest(note=note):
+                self.change_csv('references/statute_ledger.csv', lambda rows: rows[0].update(
+                    status='TEXT_MATCH', checked_on='2026-11-09', note=note))
+                self.assertIn('not reproduced: 민사소송법 제1조', score.statute_ledger(self.audit))
+
+    def test_single_result_table_cells_are_closed(self):
+        self.write('qa/result_cells.md', '| 항목 | 검사 결과 |\n|---|---|\n'
+                   '| a | COVERED |\n| b | 9/9 FILES |\n| c | PASS (container) |\n')
+        errors=score.final_states(self.audit)
+        for value in ('COVERED','9/9 FILES','PASS (container)'):
+            self.assertTrue(any('qa/result_cells.md:' in p and p.endswith(': '+value) for p in errors), value)
+
+    def test_result_table_accepts_item_and_final_states(self):
+        values=sorted(score.ITEM_RESULTS | score.FINAL_STATES)
+        self.write('qa/valid_result_cells.md', '| 항목 | 판정 |\n|---|---|\n'+''.join(
+            '| synthetic | '+value+' |\n' for value in values))
+        self.assertFalse(any('qa/valid_result_cells.md:' in p for p in score.final_states(self.audit)))
+
+    def test_prose_outputs_are_not_result_status_tags(self):
+        self.write('qa/prose_outputs.md','| 책임 | 넘기는 결과 |\n|---|---|\n'
+                   '| synthetic | 적용 규정과 마감일 → 다른 영역 |\n')
+        self.assertFalse(any('qa/prose_outputs.md:' in p for p in score.final_states(self.audit)))
+
+    def test_failures_use_not_tested_vocabulary(self):
+        def broken(a):
+            raise ValueError('synthetic failure')
+        self.assertTrue(score.checked(broken,self.audit)[0].startswith('NOT_TESTED:'))
+        with patch.object(self.audit,'run',side_effect=[subprocess.CompletedProcess([],0,'',''),
+                subprocess.TimeoutExpired('synthetic resolver',1)]):
+            self.assertIn('NOT_TESTED: resolver unavailable',score.dependencies(self.audit))
+
+    def test_resolver_permission_failure_is_not_tested(self):
+        results=[subprocess.CompletedProcess([],0,'',''),
+                 subprocess.CompletedProcess([],1,'','Permission denied: synthetic temporary metadata')]
+        with patch.object(self.audit,'run',side_effect=results):
+            self.assertIn('NOT_TESTED: resolver filesystem access denied',score.dependencies(self.audit))
+
+    def test_tool_catalog_rejects_missing_verify(self):
+        self.change_json('config/tool_catalog.json',lambda x:x['entries'][0].pop('verify'))
+        self.regenerate()
+        self.assertIn('missing tool verify command: pandoc',score.package_integrity(self.audit))
+
+    def test_tool_catalog_rejects_unregistered_doc_tool(self):
+        self.write('docs/unknown_tool.md','| Tool | Role |\n|---|---|\n| ghost-cli | Synthetic |\n')
+        self.assertTrue(any('uncatalogued doc tool: docs/unknown_tool.md:3: ghost-cli' in p
+                            for p in score.tool_catalog(self.audit)))
+
+    def test_tool_catalog_ids_are_valid_and_unique(self):
+        self.change_json('config/tool_catalog.json',lambda x:x['entries'][0].update(id='Bad Tool'))
+        self.assertIn('invalid tool id: Bad Tool',score.tool_catalog(self.audit))
+        self.change_json('config/tool_catalog.json',lambda x:x['entries'][0].update(id=x['entries'][1]['id']))
+        self.assertTrue(any(p.startswith('duplicate tool id:') for p in score.tool_catalog(self.audit)))
+
+    def test_tool_removed_from_catalog_is_detected_in_docs(self):
+        self.change_json('config/tool_catalog.json',lambda x:x.update(entries=[
+            entry for entry in x['entries'] if entry['id']!='pandoc']))
+        self.assertTrue(any('uncatalogued doc tool:' in p and 'Pandoc' in p for p in score.tool_catalog(self.audit)))
+
+    def test_statute_scan_includes_qa_and_config(self):
+        self.write('qa/statute_fixture.md','가상법 제7조/제8조의2\n')
+        self.write('config/statute_fixture.json',json.dumps({'authority':'가상법 제7조'},ensure_ascii=False))
+        citations=score.statute_citations(self.audit)
+        self.assertEqual(citations['가상법','제7조'],{'qa/statute_fixture.md','config/statute_fixture.json'})
+        self.assertEqual(citations['가상법','제8조의2'],{'qa/statute_fixture.md'})
+        self.assertIn('missing TEXT_MATCH/date: 가상법 제7조',score.statute_ledger(self.audit))
+
+    def test_openpyxl_has_compatible_requirement_range(self):
+        self.assertRegex(self.audit.text('requirements.txt'),r'(?m)^openpyxl>=3\.1,<4$')
+
+    def test_claim_matrix_uses_documented_states(self):
+        rows=self.audit.rows('examples/claim_evidence_matrix.csv')
+        self.assertTrue(rows)
+        for row in rows:
+            self.assertIn(row['confidence'],{'VERIFIED','PARTIAL','UNVERIFIED','NOT_APPLICABLE'})
+            self.assertIn(row['status'],{'PASS','FAIL','REVIEW'})
+
 
 if __name__ == '__main__':
     unittest.main()

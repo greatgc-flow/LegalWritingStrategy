@@ -10,8 +10,10 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDE = {"MANIFEST_SHA256.txt"}
+# User-side working files named in instructions (not shipped in this repo).
+USER_FILES = {"draft.md", "revised.md", "original_for_ai.md", "CASE_INDEX.md", "Activate.ps1"}
 LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
-CODE_PATH = re.compile(r"\b(?:docs|prompts|templates|qa|scripts|references|examples|config)/[\w가-힣./+~-]+\.(?:md|py|json|csv|docx|pdf|png|ps1|svg|txt|dot|mmd|yml)\b")
+CODE_PATH = re.compile(r"\b(?:docs|prompts|templates|qa|scripts|references|examples|config)/[\w가-힣./+~-]+\.(?:md|py|json|csv|docx|pdf|png|ps1|svg|txt|dot|mmd|yml)\b|(?<![\w./\\:-])[\w가-힣-]+\.(?:py|ps1|md)\b")
 issues = []
 
 def normalized_bytes(path):
@@ -49,6 +51,7 @@ def main(argv=None):
     parser.add_argument('--check-line-endings', action='store_true', help='Fail on CRLF text even when normalized hashes match.')
     args = parser.parse_args(argv)
     files = {p.relative_to(ROOT).as_posix() for p in ROOT.rglob("*") if p.is_file() and tracked(p.relative_to(ROOT))}
+    basenames = {Path(relative).name for relative in files}
     if args.check_line_endings:
         for relative in sorted(files | {'MANIFEST_SHA256.txt'}):
             path = ROOT / relative
@@ -100,8 +103,10 @@ def main(argv=None):
                 dest = (path.parent / target).resolve()
                 if not dest.is_relative_to(ROOT) or not dest.exists():
                     report("BROKEN_MARKDOWN_LINK", f"{rel}:{no}:{target}")
-            for target in CODE_PATH.findall(line):
-                if not (ROOT / target).exists():
+            code_line = re.sub(r'https?://[^\s<>`)]+', '', line).replace('\\', '/')
+            for target in CODE_PATH.findall(code_line):
+                if (('/' in target and not (ROOT / target).exists()) or
+                        ('/' not in target and target not in basenames and target not in USER_FILES)):
                     report("BROKEN_REPO_PATH", f"{rel}:{no}:{target}")
 
     register = ROOT / "references/research_register.csv"
@@ -114,7 +119,7 @@ def main(argv=None):
         research_ids = [r.get("id", "") for r in rows]
         if len(research_ids) != len(set(research_ids)):
             report("DUPLICATE_RESEARCH_ID", "research_register.csv")
-        if len(research_ids) < 42:
+        if len(research_ids) < 53:
             report("RESEARCH_BELOW_BASELINE", str(len(research_ids)))
 
     for phase in range(9):

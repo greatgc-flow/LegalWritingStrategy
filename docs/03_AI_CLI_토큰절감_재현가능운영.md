@@ -39,10 +39,13 @@
 - evidence_id: EV-001
 - source_path: private/original/EV-001.pdf
 - exact_location: p.3 lines 5-8
-- validation: original_verified / transcript_only / owner_statement / unverified
+- validation: UNVERIFIED
+- source_kind: 전사본 (원본 대조 필요)
 - legal_rule: LAW-001 (시행일 필수)
 - affected_paragraph: PAR-012
 ```
+
+`validation`은 `docs/00_최종_통합마스터_V5.md` §0의 자료 확인 표기를 따른다. 원본·전사·당사자 진술 등의 출처 종류는 `source_kind`에 별도로 기록한다. 객체 ID는 같은 문서 §1.1, 검사기 필드의 상태값은 §0을 따른다.
 
 ## 4. 프롬프트의 압축은 '정보 제거'와 다르다
 
