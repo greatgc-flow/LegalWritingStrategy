@@ -1,0 +1,9 @@
+id,law,article,cited_in,source,promulgated,effective,checked_on,status,note
+ST01,민사소송법,제1조,docs/11_불리한증거_대응과_양면논증.md;docs/14_한국_민사형사_법령_판면_윤리_시점.md,legalize-kr GitHub upstream kr/민사소송법/법률.md,2026-09-29,2026-10-02,2026-11-09,TEXT_MATCH,공정·신속·경제 및 신의성실 조항 확인; 2026-11-09 local source absent; prior TEXT_MATCH not reproduced
+ST02,민사소송법,제202조,docs/14_한국_민사형사_법령_판면_윤리_시점.md,legalize-kr GitHub upstream kr/민사소송법/법률.md,2026-09-29,2026-10-02,2026-11-09,TEXT_MATCH,자유심증주의 확인; 2026-11-09 local source absent; prior TEXT_MATCH not reproduced
+ST03,형사소송법,제307조,docs/10_이기는_법률서면_전략_정직한논증.md;docs/11_불리한증거_대응과_양면논증.md;docs/14_한국_민사형사_법령_판면_윤리_시점.md,legalize-kr kr/형사소송법/법률.md,2026-09-29,2026-10-02,2026-11-09,TEXT_MATCH,증거재판주의 확인
+ST04,형사소송법,제310조,docs/14_한국_민사형사_법령_판면_윤리_시점.md,legalize-kr kr/형사소송법/법률.md,2026-09-29,2026-10-02,2026-11-09,TEXT_MATCH,불이익한 자백의 증거능력 확인
+ST05,형사소송법,제245조의7,docs/00_최종_통합마스터_V5.md;docs/07_문서종류별_구조_실전서식.md;docs/08_검증_재현_보고서.md;docs/14_한국_민사형사_법령_판면_윤리_시점.md,legalize-kr kr/형사소송법/법률.md,2026-09-29,2026-10-02,2026-11-09,TEXT_MATCH,이의신청 신청권자·3개월 기한 확인; 사건별 부칙 적용례는 별도 심사 필요
+ST06,민사소송규칙,제2조,docs/00_최종_통합마스터_V5.md,legalize-kr GitHub upstream kr/민사소송규칙/대법원규칙.md,2026-10-12,2026-10-12,2026-11-09,TEXT_MATCH,제출서면 기재사항 확인; 2026-11-09 local source absent; prior TEXT_MATCH not reproduced
+ST07,민사소송규칙,제4조,docs/00_최종_통합마스터_V5.md;docs/02_한글폰트_근거_추천_설치.md;docs/07_문서종류별_구조_실전서식.md;docs/14_한국_민사형사_법령_판면_윤리_시점.md;prompts/P7_서식_폰트_출력_검증.md,legalize-kr GitHub upstream kr/민사소송규칙/대법원규칙.md,2026-10-12,2026-10-12,2026-11-09,TEXT_MATCH,A4·여백 45/30/20mm·12pt·줄간격 확인; 2026-11-09 local source absent; prior TEXT_MATCH not reproduced
+ST08,민사소송규칙,제69조의4,docs/00_최종_통합마스터_V5.md;docs/02_한글폰트_근거_추천_설치.md;docs/12_독자별_인용문장_문서아키텍처.md;docs/14_한국_민사형사_법령_판면_윤리_시점.md,legalize-kr GitHub upstream kr/민사소송규칙/대법원규칙.md,2026-10-12,2026-10-12,2026-11-09,TEXT_MATCH,준비서면 30쪽 한도 확인; 2026-11-09 local source absent; prior TEXT_MATCH not reproduced

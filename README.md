@@ -87,8 +87,8 @@ python scripts/legal_qa.py --record examples/synthetic_case.json
 - [`MANIFEST_SHA256.txt`](MANIFEST_SHA256.txt)는 배포 자료 파일의 체크섬이며, 표준 Git 커밋 SHA와는 다릅니다.
 - 자세한 차이: [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
-## 8. 2026-11-07 상호 재귀적 MECE·종횡 감사
+## 8. 점수 기준과 검증 이력
 
-- [감사보고서](docs/18_상호재귀_MECE_종횡감사_20261107.md): 요구 → 전략 → 원증거 → 문단/첨부 → QA의 정·역방향 추적과 H1~H8의 가로 연결, 미완료 검증을 기록했습니다.
+- [동결 루브릭](docs/18_상호재귀_MECE_종횡감사_20261107.md): 구조·추적·검증·근거·재현성의 평가 기준입니다. `python scripts/score.py`로 계산하고, 날짜·작업 트리·축별 실행값은 [점수 이력](qa/SCORE_HISTORY.md)에 기록합니다.
 - 원문 출처가 없는 인용·금액과 잘못된 검증 플래그를 탐지하는 테스트를 추가했습니다. PR에서 `Structural and synthetic QA`가 실행됩니다.
-- 자체 설계평가 **88/100점**은 승소율·기소율이나 실제 제출 적합성 점수가 아닙니다. Windows·HWP 현장 검증, 문헌 전수 원문 평가, 사건별 법률·원증거 검증은 별도입니다.
+- 계산된 내부 구조 점수는 승소율·기소율이나 실제 제출 적합성 점수가 아닙니다. Windows·HWP 현장 검증, 문헌 전수 원문 평가, 사건별 법률·원증거 검증은 별도입니다.

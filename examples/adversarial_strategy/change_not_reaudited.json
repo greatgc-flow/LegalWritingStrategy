@@ -1,0 +1,15 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "CHANGE_NOT_REAUDITED",
+  "operations": [
+    {
+      "path": [
+        "audits",
+        0,
+        "change_revisions",
+        "CHG-01"
+      ],
+      "value": 0
+    }
+  ]
+}

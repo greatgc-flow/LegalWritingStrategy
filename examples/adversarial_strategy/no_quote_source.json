@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "NO_QUOTE_SOURCE",
+  "operations": [
+    {
+      "path": [
+        "evidence",
+        0,
+        "exact_quote"
+      ],
+      "remove": true
+    }
+  ]
+}

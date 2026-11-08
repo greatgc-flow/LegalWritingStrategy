@@ -18,7 +18,10 @@
     {
       "id": "LAW-01",
       "verified": true,
-      "source": "synthetic training rule - no legal force"
+      "source": "synthetic training rule - no legal force",
+      "fact_ids": [
+        "FACT-01"
+      ]
     }
   ],
   "evidence": [
@@ -67,7 +70,103 @@
       "amount_krw": 2500000,
       "adverse_ids": [
         "ADV-01"
+      ],
+      "visual_ids": [
+        "VIS-01"
+      ],
+      "attachment_ids": [
+        "ATT-01"
       ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-01",
+      "issue_ids": [
+        "ISS-01"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "id": "ARG-01",
+      "evidence_ids": [
+        "EV-01",
+        "EV-02"
+      ],
+      "rule_ids": [
+        "LAW-01"
+      ],
+      "paragraph_ids": [
+        "PAR-01"
+      ]
+    }
+  ],
+  "visuals": [
+    {
+      "id": "VIS-01",
+      "change_ids": [
+        "CHG-01"
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "ATT-01",
+      "change_ids": [
+        "CHG-01"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "CHG-01",
+      "changed_ids": [
+        "FACT-01"
+      ],
+      "affected_ids": [
+        "ADV-01",
+        "ARG-01",
+        "ATT-01",
+        "EV-01",
+        "EV-02",
+        "FACT-01",
+        "ISS-01",
+        "LAW-01",
+        "PAR-01",
+        "R-01",
+        "VIS-01"
+      ],
+      "qa_ids": [
+        "QA-01"
+      ],
+      "revision": 1,
+      "state": "CLOSED",
+      "rollback_state": "NOT_REQUIRED",
+      "next_change_ids": []
+    }
+  ],
+  "audits": [
+    {
+      "id": "QA-01",
+      "target_ids": [
+        "ADV-01",
+        "ARG-01",
+        "ATT-01",
+        "EV-01",
+        "EV-02",
+        "FACT-01",
+        "ISS-01",
+        "LAW-01",
+        "PAR-01",
+        "R-01",
+        "VIS-01"
+      ],
+      "change_revisions": {
+        "CHG-01": 1
+      },
+      "state": "PASS",
+      "terminal": true
     }
   ]
 }

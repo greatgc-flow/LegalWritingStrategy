@@ -1,6 +1,6 @@
 # LegalWriting Strategy MasterKit V5 — Claude Code 상시지침
 
-`docs/00_최종_통합마스터_V5.md`가 기준본. 기존 V4.1 문서는 기초 규칙/이력.
+`docs/00_최종_통합마스터_V5.md`가 단일 기준본(SSOT). 완결도 루브릭은 `docs/18_상호재귀_MECE_종횡감사_20261107.md`, 점수는 `python scripts/score.py`.
 - 법적 주장보다 원본 사실·법률 시점·전체 전후 문맥·반대증거 검증을 우선한다.
 - 전략: `prompts/strategy/S0_...`~`S6_...`; 기존문서 수정: `prompts/P0_...`~`P8_...`. 당면 단계만 읽어 토큰 절약.
 - 법률·판례·금액·원문 인용을 창작하거나 왜곡하지 않는다. 유리한 자료만 취사선택하지 않는다.

@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "ADVERSE_UNVERIFIED",
+  "operations": [
+    {
+      "path": [
+        "adverse",
+        0,
+        "verification_state"
+      ],
+      "value": "UNVERIFIED"
+    }
+  ]
+}

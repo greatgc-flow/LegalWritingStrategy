@@ -57,6 +57,27 @@
       "verify": "Zotero application/Word plugin UI check",
       "command_example": "Word Zotero Add/Edit Citation",
       "source": "https://www.zotero.org/support/word_processor_integration"
+    },
+    {
+      "id": "markitdown-gc",
+      "role": "Local MarkItDown CLI for document extraction; inspect extraction against originals",
+      "verify": "markitdown-gc --version",
+      "command_example": "markitdown-gc input.docx -o extracted.md",
+      "source": "https://github.com/greatgc-flow/markitdown-gc"
+    },
+    {
+      "id": "openpyxl",
+      "role": "Read and write Excel workbooks; verify formulas and source values separately",
+      "verify": "python -c \"import openpyxl; print(openpyxl.__version__)\"",
+      "command_example": "python -c \"from openpyxl import load_workbook; print(load_workbook('input.xlsx', read_only=True).sheetnames)\"",
+      "source": "https://openpyxl.readthedocs.io/"
+    },
+    {
+      "id": "poppler-pdffonts",
+      "role": "Inspect PDF font metadata and embedding; not rendering proof",
+      "verify": "pdffonts -v",
+      "command_example": "pdffonts input.pdf",
+      "source": "https://cgit.freedesktop.org/poppler/poppler/tree/utils/pdffonts.cc"
     }
   ]
 }
