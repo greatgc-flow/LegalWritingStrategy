@@ -25,7 +25,9 @@ jobs:
             echo "Release $VERSION already exists. No overwrite."
             exit 0
           fi
+          python3 -m pip install -q -r requirements.txt
           python3 scripts/verify_package.py
+          python3 scripts/score.py
           python3 -m unittest discover -s scripts -p 'test_*.py' -v
           zip -qr "LegalWritingStrategy-${VERSION}.zip" . -x '.git/*' '.github/*' '.venv/*'
           gh release create "$VERSION" "LegalWritingStrategy-${VERSION}.zip" \
