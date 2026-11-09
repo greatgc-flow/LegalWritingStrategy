@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": "PARAGRAPH_AMOUNT_MISSING",
+  "operations": [
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "amount_krw"
+      ],
+      "remove": true
+    }
+  ]
+}

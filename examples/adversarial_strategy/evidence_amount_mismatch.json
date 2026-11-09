@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": "EVIDENCE_AMOUNT_MISMATCH",
+  "operations": [
+    {
+      "path": [
+        "evidence",
+        0,
+        "source_excerpt"
+      ],
+      "value": "입금 확인 예정; 가상 금액 -2500000원."
+    }
+  ]
+}

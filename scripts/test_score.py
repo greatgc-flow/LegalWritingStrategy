@@ -88,7 +88,7 @@ class ScoreTests(unittest.TestCase):
 
     def test_node_schema(self):
         relative = 'scripts/strategy_qa.py'
-        self.write(relative, self.audit.text(relative).replace("('EV', {})", "('ABSENT', {})"))
+        self.write(relative, self.audit.text(relative).replace("'evidence': ('EV',", "'evidence': ('ABSENT',"))
         self.assert_broken('A2.node_schema')
 
     def test_recursive_termination(self):
@@ -161,6 +161,7 @@ class ScoreTests(unittest.TestCase):
 
     def test_template_margins_follow_profile_and_keep_a4(self):
         from docx import Document
+        from legal_qa import check_docx
         profile=json.loads(self.audit.text('config/style_profile.json'))
         profile['civil']['margin_mm']={'top':41,'bottom':32,'left':21,'right':23}
         profile['criminal']['illustrative_margin_mm']={'top':24,'bottom':26,'left':20,'right':24}
@@ -169,11 +170,13 @@ class ScoreTests(unittest.TestCase):
         for civil, margins in [(True,profile['civil']['margin_mm']),
                                (False,profile['criminal']['illustrative_margin_mm'])]:
             with self.subTest(civil=civil):
-                section=Document(generator.make_doc(civil)).sections[0]
+                path=generator.make_doc(civil)
+                section=Document(path).sections[0]
                 for side,value in margins.items():
                     self.assertAlmostEqual(getattr(section,side+'_margin').mm,value,places=1)
                 self.assertAlmostEqual(section.page_width.mm,210,places=1)
                 self.assertAlmostEqual(section.page_height.mm,297,places=1)
+                self.assertEqual(check_docx(path,'civil' if civil else 'criminal',profile)['issues'],[])
 
     def test_transfer_limits(self):
         self.change_csv('references/research_register.csv', lambda rows: rows[0].update(transfer_limit=' '))

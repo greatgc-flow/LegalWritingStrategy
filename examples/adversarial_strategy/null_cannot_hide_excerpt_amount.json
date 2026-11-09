@@ -1,0 +1,30 @@
+{
+  "scope": "Fully fictional adversarial source-binding case.",
+  "expected_code": "AMOUNT_MISMATCH",
+  "operations": [
+    {
+      "path": [
+        "evidence",
+        0,
+        "amount_krw"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "amount_krw"
+      ],
+      "value": null
+    },
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "amount_not_applicable_reason"
+      ],
+      "value": "An unsupported synthetic assertion of non-applicability"
+    }
+  ]
+}

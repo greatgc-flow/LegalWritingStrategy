@@ -1,0 +1,44 @@
+{
+  "scope": "Fully fictional optional initial audit with an unresolved failed result.",
+  "expected_code": "AUDIT_NOT_CLOSED",
+  "operations": [
+    {
+      "path": [
+        "changes"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "visuals",
+        0,
+        "change_ids"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "attachments",
+        0,
+        "change_ids"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "audits",
+        0,
+        "change_revisions"
+      ],
+      "value": {}
+    },
+    {
+      "path": [
+        "audits",
+        0,
+        "state"
+      ],
+      "value": "FAIL"
+    }
+  ]
+}

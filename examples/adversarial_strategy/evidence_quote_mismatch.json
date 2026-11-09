@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": "EVIDENCE_QUOTE_MISMATCH",
+  "operations": [
+    {
+      "path": [
+        "evidence",
+        0,
+        "exact_quote"
+      ],
+      "value": "An altered fictional quotation"
+    }
+  ]
+}

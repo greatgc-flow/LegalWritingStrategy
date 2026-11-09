@@ -21,7 +21,9 @@
       "source": "synthetic training rule - no legal force",
       "fact_ids": [
         "FACT-01"
-      ]
+      ],
+      "source_location": "synthetic rule sheet, line 1",
+      "source_excerpt": "synthetic training rule - no legal force"
     }
   ],
   "evidence": [
@@ -29,12 +31,16 @@
       "id": "EV-01",
       "verified": true,
       "exact_quote": "입금 확인 예정",
-      "amount_krw": 2500000
+      "amount_krw": 2500000,
+      "source_location": "synthetic message, page 1, line 1",
+      "source_excerpt": "입금 확인 예정; 가상 금액 2500000원."
     },
     {
       "id": "EV-02",
       "verified": true,
-      "exact_quote": "아직 입금 확인 불가"
+      "exact_quote": "아직 입금 확인 불가",
+      "source_location": "synthetic response, page 1, line 2",
+      "source_excerpt": "아직 입금 확인 불가"
     }
   ],
   "facts": [
@@ -44,7 +50,7 @@
         "EV-01"
       ],
       "status": "VERIFIED_SOURCE",
-      "text": "A wrote a message; transfer itself is not established"
+      "text": "입금 확인 예정"
     }
   ],
   "adverse": [
@@ -76,7 +82,8 @@
       ],
       "attachment_ids": [
         "ATT-01"
-      ]
+      ],
+      "draft_anchor": "brief.md#PAR-01"
     }
   ],
   "requirements": [
@@ -168,5 +175,6 @@
       "state": "PASS",
       "terminal": true
     }
-  ]
+  ],
+  "unresolved": []
 }

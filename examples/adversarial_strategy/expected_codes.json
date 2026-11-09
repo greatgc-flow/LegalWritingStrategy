@@ -6,8 +6,20 @@
     "adverse_unverified.json": [
       "ADVERSE_UNVERIFIED"
     ],
-    "amount_mismatch.json": [
+    "amount_applicability_missing.json": [
+      "AMOUNT_APPLICABILITY_MISSING",
       "AMOUNT_MISMATCH"
+    ],
+    "amount_excerpt_mismatch.json": [
+      "AMOUNT_EXCERPT_MISMATCH",
+      "EVIDENCE_AMOUNT_MISMATCH"
+    ],
+    "amount_mismatch.json": [
+      "AMOUNT_EXCERPT_MISMATCH",
+      "AMOUNT_MISMATCH"
+    ],
+    "attachment_required.json": [
+      "ATTACHMENT_REQUIRED"
     ],
     "change_not_reaudited.json": [
       "CHANGE_NOT_REAUDITED",
@@ -25,6 +37,9 @@
       "CYCLE_WITHOUT_EXIT",
       "TERMINATION_NO_EXIT"
     ],
+    "draft_anchor_missing.json": [
+      "DRAFT_ANCHOR_MISSING"
+    ],
     "duplicate_id.json": [
       "DUPLICATE_ID",
       "MISSING_REF",
@@ -33,6 +48,20 @@
     ],
     "empty_record.json": [
       "EMPTY_RECORD"
+    ],
+    "evidence_amount_mismatch.json": [
+      "AMOUNT_EXCERPT_MISMATCH",
+      "EVIDENCE_AMOUNT_MISMATCH"
+    ],
+    "evidence_quote_mismatch.json": [
+      "EVIDENCE_QUOTE_MISMATCH",
+      "QUOTE_MISMATCH"
+    ],
+    "fact_text_mismatch.json": [
+      "FACT_TEXT_MISMATCH"
+    ],
+    "fact_text_missing.json": [
+      "FACT_TEXT_MISSING"
     ],
     "forward_coverage_gap.json": [
       "FORWARD_COVERAGE_GAP",
@@ -58,15 +87,28 @@
       "ORPHAN_NODE",
       "REVERSE_COVERAGE_GAP"
     ],
+    "law_source_mismatch.json": [
+      "LAW_SOURCE_MISMATCH"
+    ],
+    "law_source_missing.json": [
+      "LAW_SOURCE_MISSING"
+    ],
     "missing_node_type.json": [
       "MISSING_NODE_TYPE",
       "MISSING_REF",
       "ORPHAN_NODE"
     ],
     "missing_ref.json": [
+      "FACT_TEXT_MISMATCH",
       "MISSING_REF",
       "ORPHAN_NODE",
       "REVERSE_COVERAGE_GAP"
+    ],
+    "missing_source_fields_combined.json": [
+      "FACT_TEXT_MISSING",
+      "LAW_SOURCE_MISSING",
+      "PARAGRAPH_AMOUNT_MISSING",
+      "PARAGRAPH_QUOTE_MISSING"
     ],
     "no_adverse_review.json": [
       "NO_ADVERSE_REVIEW",
@@ -76,12 +118,16 @@
       "NO_AMOUNT_SOURCE"
     ],
     "no_evidence_link.json": [
+      "FACT_TEXT_MISMATCH",
       "NO_EVIDENCE_LINK",
       "ORPHAN_NODE",
       "REVERSE_COVERAGE_GAP"
     ],
     "no_quote_source.json": [
       "NO_QUOTE_SOURCE"
+    ],
+    "null_cannot_hide_excerpt_amount.json": [
+      "AMOUNT_MISMATCH"
     ],
     "orphan_node.json": [
       "FORWARD_COVERAGE_GAP",
@@ -91,8 +137,24 @@
     "paragraph_adverse_unreviewed.json": [
       "PARAGRAPH_ADVERSE_UNREVIEWED"
     ],
+    "paragraph_amount_missing.json": [
+      "PARAGRAPH_AMOUNT_MISSING"
+    ],
+    "paragraph_quote_missing.json": [
+      "PARAGRAPH_QUOTE_MISSING"
+    ],
+    "plain_brief_without_visuals_passes.json": [],
+    "quote_excerpt_mismatch.json": [
+      "EVIDENCE_QUOTE_MISMATCH",
+      "FACT_TEXT_MISMATCH",
+      "QUOTE_EXCERPT_MISMATCH"
+    ],
     "quote_mismatch.json": [
+      "QUOTE_EXCERPT_MISMATCH",
       "QUOTE_MISMATCH"
+    ],
+    "referenced_optional_node_missing.json": [
+      "MISSING_REF"
     ],
     "required_link_missing.json": [
       "ORPHAN_NODE",
@@ -106,6 +168,20 @@
       "TERMINATION_NO_EXIT",
       "TERMINATION_STATE_MISSING"
     ],
+    "source_excerpt_missing.json": [
+      "AMOUNT_EXCERPT_MISMATCH",
+      "EVIDENCE_AMOUNT_MISMATCH",
+      "EVIDENCE_QUOTE_MISMATCH",
+      "FACT_TEXT_MISMATCH",
+      "QUOTE_EXCERPT_MISMATCH",
+      "SOURCE_EXCERPT_MISSING"
+    ],
+    "source_location_missing.json": [
+      "SOURCE_LOCATION_MISSING"
+    ],
+    "standalone_audit_not_closed.json": [
+      "AUDIT_NOT_CLOSED"
+    ],
     "termination_no_exit.json": [
       "TERMINATION_NO_EXIT"
     ],
@@ -114,11 +190,16 @@
       "TERMINATION_STATE_MISSING"
     ],
     "unverified_evidence.json": [
+      "INVALID_RECORD",
       "UNVERIFIED_EVIDENCE"
     ],
     "unverified_law.json": [
+      "INVALID_RECORD",
       "UNVERIFIED_LAW"
+    ],
+    "visual_required.json": [
+      "VISUAL_REQUIRED"
     ]
   },
-  "scope": "Fully fictional expected error-code sets, frozen for adversarial regression."
+  "scope": "Fully fictional exact source/trace errors and a positive plain-brief case."
 }

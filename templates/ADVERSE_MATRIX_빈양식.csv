@@ -1,1 +1,1 @@
-ADVERSE_ID,SOURCE_ID,원문위치,최강불리해석,인정사실,다툴추론,독립반증ID,필요확인,검증상태,문단ID
+id,evidence_id,strongest_reading,admitted_fact,response,verification_state

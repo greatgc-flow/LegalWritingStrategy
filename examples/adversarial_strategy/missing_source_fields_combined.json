@@ -1,0 +1,38 @@
+{
+  "scope": "Fully fictional adversarial source-binding case.",
+  "expected_code": "LAW_SOURCE_MISSING",
+  "operations": [
+    {
+      "path": [
+        "laws",
+        0,
+        "source"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "facts",
+        0,
+        "text"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "quote"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "amount_krw"
+      ],
+      "remove": true
+    }
+  ]
+}

@@ -15,6 +15,13 @@
     "illustrative_margin_mm": {"top": 25, "bottom": 25, "left": 22, "right": 22}
   },
   "common": {
+    "header_pt_min": 9,
+    "footer_pt_min": 8,
+    "table_pt_min": 11,
+    "body_line_spacing_min": 1.5,
+    "heading_line_spacing_min": 1.0,
+    "header_line_spacing_min": 1.0,
+    "footer_line_spacing_min": 1.0,
     "title_pt": 16,
     "heading1_pt": 14,
     "heading2_pt": 12,

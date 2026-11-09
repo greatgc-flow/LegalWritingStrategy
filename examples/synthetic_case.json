@@ -2,15 +2,133 @@
   "test_only": true,
   "document_type": "가상 형사 의견서",
   "facts": [
-    {"id": "FACT-001", "claim": "갑이 을에게 완료 문자를 발송하였다.", "evidence_ids": ["EV-001"], "amount_krw": null, "date": "2025-03-04"},
-    {"id": "FACT-002", "claim": "가상 계좌에서 1000000원이 이체되었다.", "evidence_ids": ["EV-002"], "amount_krw": 1000000, "date": "2025-03-05"}
+    {
+      "id": "FACT-001",
+      "evidence_ids": [
+        "EV-001"
+      ],
+      "text": "갑이 을에게 완료 문자를 발송하였다."
+    },
+    {
+      "id": "FACT-002",
+      "evidence_ids": [
+        "EV-002"
+      ],
+      "text": "가상 계좌에서 1000000원이 이체되었다."
+    }
   ],
   "evidence": [
-    {"id": "EV-001", "source_location": "가상 문자 원본 2쪽", "verified": true, "exact_quote": "완료"},
-    {"id": "EV-002", "source_location": "가상 계좌거래내역 1쪽", "verified": true, "amount_krw": 1000000}
+    {
+      "id": "EV-001",
+      "source_location": "가상 문자 원본 2쪽",
+      "verified": true,
+      "exact_quote": "완료",
+      "source_excerpt": "갑이 을에게 완료 문자를 발송하였다."
+    },
+    {
+      "id": "EV-002",
+      "source_location": "가상 계좌거래내역 1쪽",
+      "verified": true,
+      "amount_krw": 1000000,
+      "source_excerpt": "가상 계좌에서 1000000원이 이체되었다.",
+      "exact_quote": "가상 계좌에서 1000000원이 이체되었다."
+    }
   ],
   "paragraphs": [
-    {"id": "PAR-001", "fact_ids": ["FACT-001"], "evidence_ids": ["EV-001"], "quote": "완료"},
-    {"id": "PAR-002", "fact_ids": ["FACT-002"], "evidence_ids": ["EV-002"], "amount_krw": 1000000}
+    {
+      "id": "PAR-001",
+      "fact_ids": [
+        "FACT-001"
+      ],
+      "evidence_ids": [
+        "EV-001"
+      ],
+      "quote": "완료",
+      "draft_anchor": "brief.md#PAR-001",
+      "adverse_ids": [
+        "ADV-001"
+      ],
+      "amount_krw": null,
+      "amount_not_applicable_reason": "이 합성 문자에는 금액이 없음"
+    },
+    {
+      "id": "PAR-002",
+      "fact_ids": [
+        "FACT-002"
+      ],
+      "evidence_ids": [
+        "EV-002"
+      ],
+      "amount_krw": 1000000,
+      "draft_anchor": "brief.md#PAR-002",
+      "adverse_ids": [
+        "ADV-001"
+      ],
+      "quote": "가상 계좌에서 1000000원이 이체되었다."
+    }
+  ],
+  "scope": "Fully fictional canonical training brief; not legal advice or real evidence.",
+  "unresolved": [],
+  "requirements": [
+    {
+      "id": "R-001",
+      "issue_ids": [
+        "ISS-001"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "ISS-001",
+      "rule_ids": [
+        "LAW-001"
+      ],
+      "fact_ids": [
+        "FACT-001",
+        "FACT-002"
+      ],
+      "adverse_ids": [
+        "ADV-001"
+      ]
+    }
+  ],
+  "laws": [
+    {
+      "id": "LAW-001",
+      "verified": true,
+      "source": "Fictional training rule; no legal force",
+      "source_location": "synthetic rule sheet, line 1",
+      "source_excerpt": "Fictional training rule; no legal force",
+      "fact_ids": [
+        "FACT-001",
+        "FACT-002"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "id": "ARG-001",
+      "evidence_ids": [
+        "EV-001",
+        "EV-002"
+      ],
+      "rule_ids": [
+        "LAW-001"
+      ],
+      "paragraph_ids": [
+        "PAR-001",
+        "PAR-002"
+      ]
+    }
+  ],
+  "adverse": [
+    {
+      "id": "ADV-001",
+      "evidence_id": "EV-001",
+      "strongest_reading": "A message does not establish the transfer or instruction.",
+      "admitted_fact": "No independent proof of who instructed the payment.",
+      "response": "Keep that issue unresolved pending the source record.",
+      "verification_state": "VERIFIED_SOURCE"
+    }
   ]
 }

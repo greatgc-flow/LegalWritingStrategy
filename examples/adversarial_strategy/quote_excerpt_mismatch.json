@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": "QUOTE_EXCERPT_MISMATCH",
+  "operations": [
+    {
+      "path": [
+        "evidence",
+        0,
+        "source_excerpt"
+      ],
+      "value": "Different fictional text, 2500000원."
+    }
+  ]
+}
