@@ -1,0 +1,74 @@
+name: Monthly statute text recheck
+on:
+  schedule:
+    - cron: '0 3 1 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+concurrency:
+  group: statute-recheck
+  cancel-in-progress: false
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify hashes, then renew unchanged attestations
+        id: recheck
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          { python scripts/recheck_statutes.py && python scripts/recheck_statutes.py --update; } 2>&1 | tee "$RUNNER_TEMP/statute-recheck.log"
+      - name: Open or update failure issue
+        if: steps.recheck.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title='Statute recheck failed'
+          body="$RUNNER_TEMP/statute-recheck-issue.md"
+          printf 'Upstream statute verification failed. Ledger dates were not renewed. Review the cited rows and source changes before accepting new hashes.\n\nRun: %s/%s/actions/runs/%s\n\n```text\n' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > "$body"
+          cat "$RUNNER_TEMP/statute-recheck.log" >> "$body"
+          printf '\n```\n' >> "$body"
+          issue=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$title in:title" --json number,title --jq '[.[] | select(.title == "Statute recheck failed")][0].number // empty')
+          if [ -n "$issue" ]; then
+            gh issue edit "$issue" --repo "$GITHUB_REPOSITORY" --body-file "$body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$body"
+          fi
+      - name: Fail on unverified text
+        if: steps.recheck.outcome == 'failure'
+        run: exit 1
+      - name: Propose renewed dates through a PR
+        if: steps.recheck.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- references/statute_ledger.csv; then exit 0; fi
+          python scripts/verify_package.py --write-manifest
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -C bot/statute-recheck
+          git add -- references/statute_ledger.csv MANIFEST_SHA256.txt
+          git commit -m 'chore: renew unchanged statute attestations'
+          git push --force-with-lease origin HEAD:refs/heads/bot/statute-recheck
+          body="$RUNNER_TEMP/statute-recheck-pr.md"
+          printf 'All recorded NFC article hashes matched live legalize-kr upstream. Renew checked_on/recheck_by by 90 days and regenerate the manifest. This verifies text identity, not legal applicability.\n' > "$body"
+          pr=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --base main --head bot/statute-recheck --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --repo "$GITHUB_REPOSITORY" --body-file "$body"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head bot/statute-recheck --title 'chore: renew unchanged statute attestations' --body-file "$body"
+          fi

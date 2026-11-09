@@ -406,6 +406,9 @@ def statute_ledger(a):
     problems = []
     today = date.today()
     for row in a.rows('references/statute_ledger.csv'):
+        if not re.fullmatch(r'[0-9a-fA-F]{64}', row.get('text_sha256') or ''):
+            problems.append(f'NEEDS_VERIFICATION: invalid text_sha256: {row.get("id")}')
+            continue
         value = row.get('recheck_by', '')
         try:
             recheck_by = date.fromisoformat(value)
