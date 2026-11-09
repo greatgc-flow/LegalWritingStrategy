@@ -35,7 +35,7 @@ def convert(strategy_path, adverse_path, base=None):
                     raise ValueError(f'{path.name}:{number}: extra CSV cells')
                 if not any(value and value.strip() for value in row.values()):
                     continue
-                table = 'adverse' if adverse else row.pop('collection', '').strip()
+                table = 'adverse' if adverse else (row.pop('collection', '') or '').strip()
                 if table not in SCHEMA or (not adverse and table == 'adverse'):
                     raise ValueError(f'{path.name}:{number}: unknown collection')
                 types, node = field_types(table), {}

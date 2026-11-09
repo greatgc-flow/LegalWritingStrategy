@@ -96,6 +96,10 @@ def valid_type(value, kind):
 def literal_amount(value, excerpt):
     return type(value) is int and any(re.search(r'(?<![\d,.\-])' + re.escape(text) +
         r'(?!\d|[,.]\d|[eE][+-]?\d)', excerpt) is not None for text in {str(value),format(value, ',')})
+
+
+# Any digit amount in KRW notation: 2500000원, 2,500,000 KRW, 250만원, 2억5천만 원, ₩2,500,000.
+AMOUNT_HINT = re.compile(r'₩\s*\d|\d[\d,]*(?:\s*[만억천백십])*\s*(?:원|KRW)')
 LINK_ERRORS = {
     ('issues', 'adverse_ids'): 'NO_ADVERSE_REVIEW',
     ('facts', 'evidence_ids'): 'NO_EVIDENCE_LINK',
@@ -249,7 +253,7 @@ def check(record):
             if not nonblank(paragraph, 'amount_not_applicable_reason'):
                 add('AMOUNT_APPLICABILITY_MISSING', rid)
             if any(e.get('amount_krw') is not None or (isinstance(e.get('source_excerpt'), str) and
-                   re.search(r'\d[\d,]*\s*(?:원|KRW)', e['source_excerpt'])) for e in sources):
+                   AMOUNT_HINT.search(e['source_excerpt'])) for e in sources):
                 add('AMOUNT_MISMATCH', rid)
         else:
             values = [e['amount_krw'] for e in sources if 'amount_krw' in e]
