@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Create editable example legal-document templates. All substantive data are synthetic."""
+import json
 from pathlib import Path
 from docx import Document
 from docx.shared import Pt, Mm, RGBColor
@@ -23,14 +24,16 @@ def set_font(style, name, size):
         rfonts.set(qn('w:'+tag), name)
 
 def make_doc(is_civil=True):
+    profile=json.loads((ROOT/'config/style_profile.json').read_text(encoding='utf-8'))
     d=Document()
     sec=d.sections[0]
     sec.page_width=Mm(210); sec.page_height=Mm(297)
+    margins=profile['civil']['margin_mm'] if is_civil else profile['criminal']['illustrative_margin_mm']
+    for side in ('top','bottom','left','right'):
+        setattr(sec,side+'_margin',Mm(margins[side]))
     if is_civil:
-        sec.top_margin=Mm(45);sec.bottom_margin=Mm(30);sec.left_margin=Mm(20);sec.right_margin=Mm(20)
         font='Noto Sans CJK KR'
     else:
-        sec.top_margin=Mm(28);sec.bottom_margin=Mm(27);sec.left_margin=Mm(22);sec.right_margin=Mm(22)
         font='Noto Serif CJK KR'
     st=d.styles['Normal'];set_font(st,font,12);st.paragraph_format.line_spacing=1.5
     st.paragraph_format.space_after=Pt(2)

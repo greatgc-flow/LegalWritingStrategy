@@ -1,8 +1,17 @@
 # LegalWritingStrategy — 법률문서 전략·작성·검증 마스터키트
 
-**Version:** v5.1.0 · **Language:** 한국어 · **Scope:** 대한민국 민사·형사·경찰·검찰·법원 제출서면
+**Version:** v5.1.1 · **Language:** 한국어 · **Scope:** 대한민국 민사·형사·경찰·검찰·법원 제출서면
 
 > 정확한 법률·증거 검증을 바탕으로 읽기 쉽고 인용하기 좋은 법률서면을 설계하기 위한 연구·프롬프트·자동검사 도구 모음입니다. **승소·기소·유죄를 보장하지 않으며**, 사건별 변호사 검토와 법령·원증거 확인을 대체하지 않습니다. 모든 `examples/`와 `templates/`의 사건은 가상 사례입니다.
+
+## 첫 사건 최단 경로
+
+1. [CASE_INDEX](templates/CASE_INDEX_빈양식.md)를 작성한다.
+2. [P0](prompts/P0_원본동결_작업범위.md)에서 원본을 보존하고 작업 범위를 정한다.
+3. [P1](prompts/P1_원문_사실_증거색인.md)에서 FACT/EV/LAW/ISS ID를 부여하고 미확인은 `UNVERIFIED`로 표시한다.
+4. [P5](prompts/P5_사람다운문체_정확교정.md)에서 사실·법적 의미를 보존하며 문장을 다듬는다.
+5. [P8](prompts/P8_독립감사_종횡_최종판정.md)에서 독립 검수하고 사건별 변호사 검토를 거친다.
+S0~S6 전략 단계는 복잡한 사건에서 선택적으로 사용한다. 전체 기준은 [통합 기준본](docs/00_최종_통합마스터_V5.md)을 참조한다.
 
 ## 1. 빠른 시작 (3분)
 
@@ -82,12 +91,14 @@ python scripts/legal_qa.py --record examples/synthetic_case.json
 
 ## 7. 릴리즈와 재현성
 
-- 릴리즈: **[`v5.1.0`](https://github.com/greatgc-flow/LegalWritingStrategy/releases/tag/v5.1.0)**. 릴리즈 자산은 저장소의 공개 자료만 묶습니다.
+- 릴리즈: **[`v5.1.1`](https://github.com/greatgc-flow/LegalWritingStrategy/releases/tag/v5.1.1)**. 릴리즈 자산은 저장소의 공개 자료만 묶습니다.
 - 작업중 버전 변경 시 `docs/00_최종_통합마스터_V5.md`를 기준으로 다른 문서가 참조하는 파일 경로를 점검하고 QA를 실행합니다.
 - [`MANIFEST_SHA256.txt`](MANIFEST_SHA256.txt)는 배포 자료 파일의 체크섬이며, 표준 Git 커밋 SHA와는 다릅니다.
 - 자세한 차이: [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
 ## 8. 점수 기준과 검증 이력
+
+`score.py`의 100점은 내부 **구조·형식 점수**이며 실제 사건 정확성 검증이 아니다. Crossref/TEXT_MATCH 표시는 기록된 확인 진술이며 `score.py`가 원문 대조를 재실행하지 않는다.
 
 - [동결 루브릭](docs/18_상호재귀_MECE_종횡감사_20261107.md): 구조·추적·검증·근거·재현성의 평가 기준입니다. `python scripts/score.py`로 계산하고, 날짜·작업 트리·축별 실행값은 [점수 이력](qa/SCORE_HISTORY.md)에 기록합니다.
 - 원문 출처가 없는 인용·금액과 잘못된 검증 플래그를 탐지하는 테스트를 추가했습니다. PR에서 `Structural and synthetic QA`가 실행됩니다.
