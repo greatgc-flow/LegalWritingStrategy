@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import unittest
 import uuid
+from datetime import date, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -136,6 +137,43 @@ class ScoreTests(unittest.TestCase):
     def test_statute_date_required(self):
         self.change_csv('references/statute_ledger.csv', lambda rows: rows[0].update(checked_on=''))
         self.assert_broken('A4.statute_ledger')
+
+    def test_statute_recheck_expired(self):
+        expired=(date.today()-timedelta(days=1)).isoformat()
+        self.change_csv('references/statute_ledger.csv',lambda rows:rows[0].update(recheck_by=expired))
+        self.assertIn('NEEDS_VERIFICATION: expired recheck_by: ST01: '+expired,
+                      score.statute_ledger(self.audit))
+
+    def test_statute_recheck_missing_or_invalid(self):
+        for value in ('', 'not-a-date', '2026-02-30', '20270207'):
+            with self.subTest(value=value):
+                self.change_csv('references/statute_ledger.csv',lambda rows:rows[0].update(recheck_by=value))
+                self.assertIn('NEEDS_VERIFICATION: invalid recheck_by: ST01: '+value,
+                              score.statute_ledger(self.audit))
+        self.change_csv('references/statute_ledger.csv',lambda rows:[row.pop('recheck_by') for row in rows])
+        self.assertTrue(any(p.startswith('NEEDS_VERIFICATION: invalid recheck_by:')
+                            for p in score.statute_ledger(self.audit)))
+
+    def test_statute_recheck_today_is_valid(self):
+        self.change_csv('references/statute_ledger.csv',lambda rows:[
+            row.update(recheck_by=date.today().isoformat()) for row in rows])
+        self.assertEqual(score.statute_ledger(self.audit),[])
+
+    def test_template_margins_follow_profile_and_keep_a4(self):
+        from docx import Document
+        profile=json.loads(self.audit.text('config/style_profile.json'))
+        profile['civil']['margin_mm']={'top':41,'bottom':32,'left':21,'right':23}
+        profile['criminal']['illustrative_margin_mm']={'top':24,'bottom':26,'left':20,'right':24}
+        self.write('config/style_profile.json',json.dumps(profile))
+        generator=self.audit.module('make_templates')
+        for civil, margins in [(True,profile['civil']['margin_mm']),
+                               (False,profile['criminal']['illustrative_margin_mm'])]:
+            with self.subTest(civil=civil):
+                section=Document(generator.make_doc(civil)).sections[0]
+                for side,value in margins.items():
+                    self.assertAlmostEqual(getattr(section,side+'_margin').mm,value,places=1)
+                self.assertAlmostEqual(section.page_width.mm,210,places=1)
+                self.assertAlmostEqual(section.page_height.mm,297,places=1)
 
     def test_transfer_limits(self):
         self.change_csv('references/research_register.csv', lambda rows: rows[0].update(transfer_limit=' '))

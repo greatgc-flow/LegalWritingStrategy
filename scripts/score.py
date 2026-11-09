@@ -395,7 +395,19 @@ def statute_citations(a):
 def statute_ledger(a):
     available = {}
     problems = []
+    today = date.today()
     for row in a.rows('references/statute_ledger.csv'):
+        value = row.get('recheck_by', '')
+        try:
+            recheck_by = date.fromisoformat(value)
+            if recheck_by.isoformat() != value:
+                raise ValueError('expected YYYY-MM-DD')
+        except (TypeError, ValueError):
+            problems.append(f'NEEDS_VERIFICATION: invalid recheck_by: {row.get("id")}: {value}')
+            continue
+        if recheck_by < today:
+            problems.append(f'NEEDS_VERIFICATION: expired recheck_by: {row.get("id")}: {value}')
+            continue
         if re.search(r'not\s+reproduced|absent|재현\s*안', row.get('note', ''), re.I):
             problems.append(f'not reproduced: {row.get("law")} {row.get("article")}')
             continue
