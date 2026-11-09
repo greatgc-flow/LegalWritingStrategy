@@ -1,1 +1,1 @@
-ISSUE_ID,LAW_ID,LAW_시행일,FACT_ID,EV_ID,불리증거ID,반론검토,문단ID,상태
+collection,id,adverse_ids,affected_ids,amount_krw,amount_not_applicable_reason,attachment_ids,change_ids,change_revisions,changed_ids,draft_anchor,evidence_ids,exact_quote,fact_ids,issue_ids,needs_attachment,needs_visual,next_change_ids,paragraph_ids,qa_ids,quote,revision,rollback_state,rule_ids,source,source_excerpt,source_location,state,status,target_ids,terminal,text,verified,visual_ids

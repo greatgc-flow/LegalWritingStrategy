@@ -1,6 +1,6 @@
 # LegalWritingStrategy — 법률문서 전략·작성·검증 마스터키트
 
-**Version:** v5.1.1 · **Language:** 한국어 · **Scope:** 대한민국 민사·형사·경찰·검찰·법원 제출서면
+**Version:** v5.2.0 · **Language:** 한국어 · **Scope:** 대한민국 민사·형사·경찰·검찰·법원 제출서면
 
 > 정확한 법률·증거 검증을 바탕으로 읽기 쉽고 인용하기 좋은 법률서면을 설계하기 위한 연구·프롬프트·자동검사 도구 모음입니다. **승소·기소·유죄를 보장하지 않으며**, 사건별 변호사 검토와 법령·원증거 확인을 대체하지 않습니다. 모든 `examples/`와 `templates/`의 사건은 가상 사례입니다.
 
@@ -55,7 +55,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-설치 대상: Git, Pandoc, LibreOffice, Python 3.12, Graphviz, Zotero(선택). 한글 폰트는 자동 설치하지 않으며 [`docs/02_한글폰트_근거_추천_설치.md`](docs/02_한글폰트_근거_추천_설치.md)와 [`docs/17_Windows_도구_설치_개별사용법.md`](docs/17_Windows_도구_설치_개별사용법.md)를 따릅니다. Windows는 이 저장소에서 실기기 설치 검증되지 않았습니다.
+설치 대상: Git, Pandoc, LibreOffice, Python 3.12, Graphviz, Zotero(선택). 한글 폰트는 자동 설치하지 않으며 [`docs/02_한글폰트_근거_추천_설치.md`](docs/02_한글폰트_근거_추천_설치.md)와 [`docs/04_도구_설치_설정_사용법.md`](docs/04_도구_설치_설정_사용법.md)를 따릅니다. Windows는 이 저장소에서 실기기 설치 검증되지 않았습니다.
 
 ## 4. 품질검사 실행
 
@@ -69,6 +69,15 @@ python scripts/legal_qa.py --record examples/synthetic_case.json
 
 검증 프로그램은 **문서 연결성·기본 형식·합성 사례의 오류 탐지**를 위한 것입니다. 법령의 현행성, 판례의 진정성, 실제 증거의 적법성/증명력, 소송결과를 판단하지 않습니다.
 
+사건 데이터는 [JSON 예제](examples/synthetic_strategy_case.json)와 [필드 계약](docs/00_최종_통합마스터_V5.md)의 SCHEMA 및 SCALAR_FIELDS를 기준으로 한 번 관리합니다. CSV 두 양식은 선택 입력 뷰입니다. 작성 후 다음 명령으로 새 JSON을 만들고 검사합니다(목록·불리언·수치 셀은 JSON 문법 사용).
+
+```bash
+python scripts/csv_to_record.py --strategy templates/STRATEGY_LINK_빈양식.csv --adverse templates/ADVERSE_MATRIX_빈양식.csv --out private/case_record.json
+python scripts/legal_qa.py --docx private/brief.docx --kind civil
+```
+
+`--base`로 기존 JSON의 scope/unresolved 등 루트 메타데이터를 보존할 수 있으며 노드 컬렉션은 CSV 내용으로 교체됩니다. 원문 위치·발췌와 서면 문단 앵커를 입력하고 미해결 항목을 명시합니다. VIS/ATT/CHG/QA는 필요할 때만 만들지만 참조·변경이 있으면 검증합니다. DOCX는 `--kind criminal`로 형사 예시 프로필을 선택하며, 구역·run·사용/설정 스타일 오류가 종료코드에 반영됩니다. 실제 PDF 렌더·원본 진정성 검수는 별도입니다.
+
 ## 5. 실전 용도별 바로가기
 
 | 필요할 때 | 바로 읽기 |
@@ -77,8 +86,8 @@ python scripts/legal_qa.py --record examples/synthetic_case.json
 | 불리한 문자·녹취·거래내역에 대응 | [`docs/11_불리한증거_대응과_양면논증.md`](docs/11_불리한증거_대응과_양면논증.md) |
 | 주요 사건이론과 반대가설 비교 | [`docs/10_이기는_법률서면_전략_정직한논증.md`](docs/10_이기는_법률서면_전략_정직한논증.md) |
 | 한국 민사·형사 작성·제출 기준 | [`docs/14_한국_민사형사_법령_판면_윤리_시점.md`](docs/14_한국_민사형사_법령_판면_윤리_시점.md) |
-| 본문 vs 별첨 / 표·차트·폰트 | [`docs/16_폰트_시각_설정_추가검증.md`](docs/16_폰트_시각_설정_추가검증.md) |
-| AI 사용 토큰 줄이기 | [`docs/15_토큰절약_AI툴_운영_실무규칙.md`](docs/15_토큰절약_AI툴_운영_실무규칙.md) |
+| 본문 vs 별첨 / 표·차트·폰트 | [`docs/02_한글폰트_근거_추천_설치.md`](docs/02_한글폰트_근거_추천_설치.md) |
+| AI 사용 토큰 줄이기 | [`docs/03_AI_CLI_토큰절감_재현가능운영.md`](docs/03_AI_CLI_토큰절감_재현가능운영.md) |
 | 연구 근거 및 한계 확인 | [`docs/05_논문_연구와_근거등급.md`](docs/05_논문_연구와_근거등급.md), [`references/research_register.csv`](references/research_register.csv) |
 
 ## 6. 자료 보안과 공개 범위
@@ -91,7 +100,7 @@ python scripts/legal_qa.py --record examples/synthetic_case.json
 
 ## 7. 릴리즈와 재현성
 
-- 릴리즈: **[`v5.1.1`](https://github.com/greatgc-flow/LegalWritingStrategy/releases/tag/v5.1.1)**. 릴리즈 자산은 저장소의 공개 자료만 묶습니다.
+- 릴리즈: **[`v5.2.0`](https://github.com/greatgc-flow/LegalWritingStrategy/releases/tag/v5.2.0)**. 릴리즈 자산은 저장소의 공개 자료만 묶습니다.
 - 작업중 버전 변경 시 `docs/00_최종_통합마스터_V5.md`를 기준으로 다른 문서가 참조하는 파일 경로를 점검하고 QA를 실행합니다.
 - [`MANIFEST_SHA256.txt`](MANIFEST_SHA256.txt)는 배포 자료 파일의 체크섬이며, 표준 Git 커밋 SHA와는 다릅니다.
 - 자세한 차이: [`RELEASE_NOTES.md`](RELEASE_NOTES.md).

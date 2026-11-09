@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": "FACT_TEXT_MISMATCH",
+  "operations": [
+    {
+      "path": [
+        "facts",
+        0,
+        "text"
+      ],
+      "value": "An unsupported factual sentence"
+    }
+  ]
+}

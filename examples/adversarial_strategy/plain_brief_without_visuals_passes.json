@@ -1,0 +1,46 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": null,
+  "operations": [
+    {
+      "path": [
+        "visuals"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "attachments"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "changes"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "audits"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "visual_ids"
+      ],
+      "remove": true
+    },
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "attachment_ids"
+      ],
+      "remove": true
+    }
+  ]
+}

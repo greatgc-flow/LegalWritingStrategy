@@ -47,7 +47,7 @@ def make_doc(is_civil=True):
     hdr=sec.header.paragraphs[0]
     hdr.alignment=WD_ALIGN_PARAGRAPH.RIGHT
     run=hdr.add_run('가상 예시 · 실제 사건에 제출 금지')
-    run.font.name=font;run.font.size=Pt(9);run.font.color.rgb=RGBColor(120,130,140)
+    run.font.name=font;run.font.size=Pt(profile['common']['header_pt_min']);run.font.color.rgb=RGBColor(120,130,140)
     title='민사 준비서면 (빈 서식·작성 예시)' if is_civil else '수사기관 제출 의견서 (빈 서식·작성 예시)'
     d.add_paragraph(title,'Title').alignment=WD_ALIGN_PARAGRAPH.CENTER
     d.add_paragraph('※ 교육용 구조 예시입니다. 실제 사건 내용·절차요건·제출기관 지정서식·법령 적용 여부를 별도로 확인하십시오.')
@@ -92,12 +92,12 @@ def make_doc(is_civil=True):
         for cell in row.cells:
             for p in cell.paragraphs:
                 for r in p.runs:
-                    r.font.name=font;r.font.size=Pt(11)
+                    r.font.name=font;r.font.size=Pt(profile['common']['table_pt_min'])
     d.add_paragraph('작성일: [YYYY-MM-DD]    제출자: [서명 또는 날인 요구 확인]')
     foot=sec.footer.paragraphs[0]
     foot.alignment=WD_ALIGN_PARAGRAPH.CENTER
     rr=foot.add_run('교육용 템플릿 — 원본·법령·접수형식 검수 전 제출 금지')
-    rr.font.name=font;rr.font.size=Pt(8)
+    rr.font.name=font;rr.font.size=Pt(profile['common']['footer_pt_min'])
     d.save(OUT/fname)
     return OUT/fname
 

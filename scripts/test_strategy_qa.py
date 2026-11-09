@@ -3,7 +3,7 @@
 import copy,json,sys,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from strategy_qa import SCHEMA, check
+from strategy_qa import SCHEMA, OPTIONAL_COLLECTIONS, check
 BASE=json.loads((Path(__file__).resolve().parent.parent/'examples/synthetic_strategy_case.json').read_text(encoding='utf-8'))
 class QA(unittest.TestCase):
     def case(self):return copy.deepcopy(BASE)
@@ -44,7 +44,7 @@ class QA(unittest.TestCase):
 
     def test_all_mandatory_types_required(self):
         for table in SCHEMA:
-            if table != 'adverse':
+            if table not in OPTIONAL_COLLECTIONS:
                 with self.subTest(table=table):
                     x=self.case();x.pop(table)
                     self.assertTrue(any(z.startswith('MISSING_NODE_TYPE:') for z in check(x)))
@@ -122,6 +122,48 @@ class QA(unittest.TestCase):
         for rid in ('CHG-01','CHG-02'):
             self.assertIn('CYCLE_WITHOUT_EXIT:'+rid, errors)
 
+    def test_conditional_artifact_links(self):
+        x=self.case();x['facts'][0].update(needs_visual=True,visual_ids=['VIS-01'])
+        x['evidence'][0].update(needs_attachment=True,attachment_ids=['ATT-01'])
+        self.assertEqual(check(x),[])
+        x['facts'][0]['visual_ids']=[]
+        self.assertIn('VISUAL_REQUIRED:FACT-01',check(x))
+
+    def test_plain_change_needs_no_dummy_visual(self):
+        x=self.case()
+        for table in ('visuals','attachments'):x.pop(table)
+        for key in ('visual_ids','attachment_ids'):x['paragraphs'][0].pop(key)
+        for row in (x['changes'][0],x['audits'][0]):
+            key='affected_ids' if 'affected_ids' in row else 'target_ids'
+            row[key]=[rid for rid in row[key] if rid not in ('VIS-01','ATT-01')]
+        self.assertEqual(check(x),[])
+
+    def test_comma_formatted_amount_is_literal(self):
+        x=self.case();x['evidence'][0]['source_excerpt']=x['evidence'][0]['source_excerpt'].replace('2500000','2,500,000')
+        self.assertEqual(check(x),[])
+
+    def test_unresolved_items_are_explicit_and_never_override_source_errors(self):
+        x=self.case();x['unresolved']=['Synthetic missing bank confirmation.']
+        self.assertEqual(check(x),[])
+        x['laws'][0].pop('source')
+        self.assertIn('LAW_SOURCE_MISSING:LAW-01',check(x))
+
+    def test_unknown_node_fields_are_not_silently_accepted(self):
+        x=self.case();x['facts'][0]['misspelled_source_field']='synthetic'
+        self.assertIn('INVALID_RECORD:FACT-01:unknown:misspelled_source_field',check(x))
+
+    def test_standalone_audit_respects_terminal_state(self):
+        x=self.case();x.pop('changes')
+        for table in ('visuals','attachments'):x[table][0].pop('change_ids')
+        x['audits'][0]['change_revisions']={}
+        self.assertEqual(check(x),[])
+        x['audits'][0]['state']='FAIL'
+        self.assertIn('AUDIT_NOT_CLOSED:QA-01',check(x))
+
+    def test_audit_change_reference_must_exist(self):
+        x=self.case();x['audits'][0]['change_revisions']['CHG-MISSING']=1
+        self.assertIn('MISSING_REF:QA-01:change_revisions:CHG-MISSING',check(x))
+
 
 def apply_fixture(fixture):
     """Apply explicit synthetic mutations; [] replaces the root record."""
@@ -155,7 +197,8 @@ def fixture_test(fixture):
     def test(self):
         codes={error.split(':',1)[0] for error in check(apply_fixture(fixture))}
         self.assertEqual(codes, set(EXPECTED_CODES[fixture['_file']]))
-        self.assertIn(fixture['expected_code'], codes)
+        if fixture['expected_code'] is not None:
+            self.assertIn(fixture['expected_code'], codes)
     return test
 
 

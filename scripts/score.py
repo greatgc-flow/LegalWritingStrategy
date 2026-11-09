@@ -189,7 +189,7 @@ def error_codes(a):
                 if isinstance(item, ast.Constant) and isinstance(item.value, str) and ':' in item.value:
                     expected.add(item.value.split(':', 1)[0])
     fixtures = a.fixtures()
-    declared = [code for _, code, _ in fixtures]
+    declared = [code for _, code, _ in fixtures if code is not None]
     manifest = json.loads(a.text('examples/adversarial_strategy/expected_codes.json'))['cases']
     names = {name for name, _, _ in fixtures}
     problems = ['missing fixture: ' + code for code in sorted(expected - set(declared))]
@@ -200,7 +200,8 @@ def error_codes(a):
         if not isinstance(codes, list) or not all(isinstance(value, str) for value in codes):
             problems.append('invalid expected code list: ' + name)
             continue
-        if len(codes) != len(set(codes)) or actual != set(codes) or code not in actual:
+        if (len(codes) != len(set(codes)) or actual != set(codes) or
+                (code not in actual if code is not None else bool(actual))):
             problems.append('exact expected code set differs: ' + name)
     problems.extend('unknown fixture code: ' + code for code in sorted(set(declared) - expected))
     return problems
@@ -211,16 +212,24 @@ def node_schema(a):
     expected = {'R', 'ISS', 'LAW', 'FACT', 'EV', 'ARG', 'PAR', 'VIS', 'ATT', 'CHG', 'QA'}
     kinds = {kind for kind, _ in schema.values()}
     problems = ['missing node kind: ' + kind for kind in sorted(expected - kinds)]
-    connected = set()
+    connected, linked = set(), set()
+    optional = a.module('strategy_qa').OPTIONAL_COLLECTIONS
+    if optional != {'visuals','attachments','changes','audits','adverse'}:
+        problems.append('optional/core collection contract differs')
     for table, (kind, fields) in schema.items():
         for field, (target, required, direction) in fields.items():
+            linked.add(kind)
+            if target in schema:
+                linked.add(schema[target][0])
             if target != '*' and target not in schema:
                 problems.append(f'invalid target: {table}.{field}')
             if required:
                 connected.add(kind)
                 if target in schema:
                     connected.add(schema[target][0])
-    problems.extend('no required connection: ' + kind for kind in sorted(expected - connected))
+    core = {kind for table,(kind,_) in schema.items() if table not in optional}
+    problems.extend('no required connection: ' + kind for kind in sorted(core - connected))
+    problems.extend('no defined connection: ' + kind for kind in sorted(expected - linked))
     return problems
 
 

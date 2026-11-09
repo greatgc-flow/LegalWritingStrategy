@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": "ATTACHMENT_REQUIRED",
+  "operations": [
+    {
+      "path": [
+        "evidence",
+        0,
+        "needs_attachment"
+      ],
+      "value": true
+    }
+  ]
+}

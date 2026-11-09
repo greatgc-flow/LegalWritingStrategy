@@ -1,0 +1,12 @@
+{
+  "scope": "Fully fictional mutation of the canonical training record; not legal evidence.",
+  "expected_code": "MISSING_REF",
+  "operations": [
+    {
+      "path": [
+        "visuals"
+      ],
+      "remove": true
+    }
+  ]
+}
