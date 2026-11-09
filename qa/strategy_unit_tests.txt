@@ -1,15 +1,6 @@
-test_duplicate_id (test_strategy_qa.QA.test_duplicate_id) ... ok
-test_missing_adverse (test_strategy_qa.QA.test_missing_adverse) ... ok
-test_missing_fact_evidence (test_strategy_qa.QA.test_missing_fact_evidence) ... ok
-test_missing_paragraph_adverse (test_strategy_qa.QA.test_missing_paragraph_adverse) ... ok
-test_modified_amount (test_strategy_qa.QA.test_modified_amount) ... ok
-test_modified_quote (test_strategy_qa.QA.test_modified_quote) ... ok
-test_unknown_law (test_strategy_qa.QA.test_unknown_law) ... ok
-test_unverified_evidence (test_strategy_qa.QA.test_unverified_evidence) ... ok
-test_valid (test_strategy_qa.QA.test_valid) ... ok
-test_weak_adverse_response (test_strategy_qa.QA.test_weak_adverse_response) ... ok
+현재 단위시험 결과는 아래 명령의 실행 로그 또는 CI `Structural and synthetic QA`에서 확인한다.
+이 파일의 과거 고정 건수·통과 표시는 현재 결과의 근거로 사용하지 않는다.
 
-----------------------------------------------------------------------
-Ran 10 tests in 0.001s
+python -m unittest discover -s scripts -p 'test_*.py' -v
 
-OK
+실제 점수 실행 이력: qa/SCORE_HISTORY.md

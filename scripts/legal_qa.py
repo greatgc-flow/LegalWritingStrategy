@@ -51,7 +51,7 @@ def check_docx(path):
 
 
 def check_pdf(path):
-    import fitz
+    import pymupdf as fitz
     doc = fitz.open(str(path))
     mm = lambda x: round(x * 25.4 / 72, 1)
     pages = []

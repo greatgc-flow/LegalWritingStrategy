@@ -1,12 +1,6 @@
-test_amount_mismatch (test_qa.TestLegalQA.test_amount_mismatch) ... ok
-test_clean (test_qa.TestLegalQA.test_clean) ... ok
-test_missing_evidence_reference (test_qa.TestLegalQA.test_missing_evidence_reference) ... ok
-test_missing_fact (test_qa.TestLegalQA.test_missing_fact) ... ok
-test_missing_fact_evidence_link (test_qa.TestLegalQA.test_missing_fact_evidence_link) ... ok
-test_quote_mismatch (test_qa.TestLegalQA.test_quote_mismatch) ... ok
-test_unverified_evidence (test_qa.TestLegalQA.test_unverified_evidence) ... ok
+현재 단위시험 결과는 아래 명령의 실행 로그 또는 CI `Structural and synthetic QA`에서 확인한다.
+이 파일의 과거 고정 건수·통과 표시는 현재 결과의 근거로 사용하지 않는다.
 
-----------------------------------------------------------------------
-Ran 7 tests in 0.000s
+python -m unittest discover -s scripts -p 'test_*.py' -v
 
-OK
+실제 점수 실행 이력: qa/SCORE_HISTORY.md

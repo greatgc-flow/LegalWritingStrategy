@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "AMOUNT_MISMATCH",
+  "operations": [
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "amount_krw"
+      ],
+      "value": 4500000
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "TERMINATION_NO_EXIT",
+  "operations": [
+    {
+      "path": [
+        "audits",
+        0,
+        "terminal"
+      ],
+      "value": false
+    }
+  ]
+}

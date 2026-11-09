@@ -1,0 +1,22 @@
+{
+  "scope": "Fully fictional incomplete-rollback case; not legal evidence.",
+  "expected_code": "TERMINATION_STATE_MISSING",
+  "operations": [
+    {
+      "path": [
+        "changes",
+        0,
+        "state"
+      ],
+      "value": "ROLLED_BACK"
+    },
+    {
+      "path": [
+        "changes",
+        0,
+        "rollback_state"
+      ],
+      "value": "PENDING"
+    }
+  ]
+}

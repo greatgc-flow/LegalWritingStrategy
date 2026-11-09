@@ -1,0 +1,124 @@
+{
+  "cases": {
+    "adverse_field_empty.json": [
+      "ADVERSE_FIELD_EMPTY"
+    ],
+    "adverse_unverified.json": [
+      "ADVERSE_UNVERIFIED"
+    ],
+    "amount_mismatch.json": [
+      "AMOUNT_MISMATCH"
+    ],
+    "change_not_reaudited.json": [
+      "CHANGE_NOT_REAUDITED",
+      "TERMINATION_NO_EXIT"
+    ],
+    "change_propagation_gap.json": [
+      "CHANGE_PROPAGATION_GAP"
+    ],
+    "change_scope_invalid.json": [
+      "CHANGE_NOT_REAUDITED",
+      "CHANGE_PROPAGATION_GAP",
+      "CHANGE_SCOPE_INVALID"
+    ],
+    "cycle_without_exit.json": [
+      "CYCLE_WITHOUT_EXIT",
+      "TERMINATION_NO_EXIT"
+    ],
+    "duplicate_id.json": [
+      "DUPLICATE_ID",
+      "MISSING_REF",
+      "ORPHAN_NODE",
+      "REVERSE_COVERAGE_GAP"
+    ],
+    "empty_record.json": [
+      "EMPTY_RECORD"
+    ],
+    "forward_coverage_gap.json": [
+      "FORWARD_COVERAGE_GAP",
+      "ORPHAN_NODE",
+      "REQUIRED_LINK_MISSING"
+    ],
+    "invalid_collection.json": [
+      "CHANGE_SCOPE_INVALID",
+      "INVALID_COLLECTION",
+      "MISSING_REF",
+      "ORPHAN_NODE",
+      "REVERSE_COVERAGE_GAP"
+    ],
+    "invalid_link.json": [
+      "INVALID_LINK",
+      "REQUIRED_LINK_MISSING",
+      "REVERSE_COVERAGE_GAP"
+    ],
+    "invalid_record.json": [
+      "CHANGE_SCOPE_INVALID",
+      "INVALID_RECORD",
+      "MISSING_REF",
+      "ORPHAN_NODE",
+      "REVERSE_COVERAGE_GAP"
+    ],
+    "missing_node_type.json": [
+      "MISSING_NODE_TYPE",
+      "MISSING_REF",
+      "ORPHAN_NODE"
+    ],
+    "missing_ref.json": [
+      "MISSING_REF",
+      "ORPHAN_NODE",
+      "REVERSE_COVERAGE_GAP"
+    ],
+    "no_adverse_review.json": [
+      "NO_ADVERSE_REVIEW",
+      "ORPHAN_NODE"
+    ],
+    "no_amount_source.json": [
+      "NO_AMOUNT_SOURCE"
+    ],
+    "no_evidence_link.json": [
+      "NO_EVIDENCE_LINK",
+      "ORPHAN_NODE",
+      "REVERSE_COVERAGE_GAP"
+    ],
+    "no_quote_source.json": [
+      "NO_QUOTE_SOURCE"
+    ],
+    "orphan_node.json": [
+      "FORWARD_COVERAGE_GAP",
+      "ORPHAN_NODE",
+      "REQUIRED_LINK_MISSING"
+    ],
+    "paragraph_adverse_unreviewed.json": [
+      "PARAGRAPH_ADVERSE_UNREVIEWED"
+    ],
+    "quote_mismatch.json": [
+      "QUOTE_MISMATCH"
+    ],
+    "required_link_missing.json": [
+      "ORPHAN_NODE",
+      "REQUIRED_LINK_MISSING"
+    ],
+    "reverse_coverage_gap.json": [
+      "REQUIRED_LINK_MISSING",
+      "REVERSE_COVERAGE_GAP"
+    ],
+    "rollback_incomplete.json": [
+      "TERMINATION_NO_EXIT",
+      "TERMINATION_STATE_MISSING"
+    ],
+    "termination_no_exit.json": [
+      "TERMINATION_NO_EXIT"
+    ],
+    "termination_state_missing.json": [
+      "TERMINATION_NO_EXIT",
+      "TERMINATION_STATE_MISSING"
+    ],
+    "unverified_evidence.json": [
+      "UNVERIFIED_EVIDENCE"
+    ],
+    "unverified_law.json": [
+      "UNVERIFIED_LAW"
+    ]
+  },
+  "scope": "Fully fictional expected error-code sets, frozen for adversarial regression."
+}

@@ -1,0 +1,14 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "REVERSE_COVERAGE_GAP",
+  "operations": [
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "fact_ids"
+      ],
+      "value": []
+    }
+  ]
+}

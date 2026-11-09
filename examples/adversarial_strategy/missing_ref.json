@@ -1,0 +1,16 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "MISSING_REF",
+  "operations": [
+    {
+      "path": [
+        "facts",
+        0,
+        "evidence_ids"
+      ],
+      "value": [
+        "EV-MISSING"
+      ]
+    }
+  ]
+}

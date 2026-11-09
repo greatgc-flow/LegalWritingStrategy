@@ -1,0 +1,12 @@
+{
+  "scope": "Fully fictional mutation of ../synthetic_strategy_case.json; not legal evidence.",
+  "expected_code": "MISSING_NODE_TYPE",
+  "operations": [
+    {
+      "path": [
+        "requirements"
+      ],
+      "value": []
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+rule_id,rule,test_or_gate,location
+1,법원/수사기관 제출서면의 법리·증거·기한·진정성·반대자료를 임의 창작·변형·은폐 금지. 확인되지 않으면 `UNVERIFIED`.,test_strategy_qa.QA.test_unknown_law,scripts/test_strategy_qa.py
+1,법원/수사기관 제출서면의 법리·증거·기한·진정성·반대자료를 임의 창작·변형·은폐 금지. 확인되지 않으면 `UNVERIFIED`.,SG1,scripts/score.py
+2,"전략 작업은 `prompts/strategy/S0..S6` 중 현재 단계, 기존서면 수정은 `prompts/P0..P8` 중 해당 단계만 열람. 전체 파일을 매번 통째로 읽지 않는다.",A1.stage_ids,scripts/score.py
+3,"판단자의 유죄/기소/승소 결과를 보장하지 않고, 불리한 증거의 최강 해석·반론을 공정하게 검토한다.",test_strategy_qa.QA.test_weak_adverse_response,scripts/test_strategy_qa.py
+3,"판단자의 유죄/기소/승소 결과를 보장하지 않고, 불리한 증거의 최강 해석·반론을 공정하게 검토한다.",SG2,scripts/score.py
+3,"판단자의 유죄/기소/승소 결과를 보장하지 않고, 불리한 증거의 최강 해석·반론을 공정하게 검토한다.",SG3,scripts/score.py
+4,조문/판례는 해당 시점 원문을 검증한다. 사람·날짜·금액·인용·도표 관계는 원증거에 역추적.,A4.statute_ledger,scripts/score.py
+4,조문/판례는 해당 시점 원문을 검증한다. 사람·날짜·금액·인용·도표 관계는 원증거에 역추적.,test_strategy_qa.QA.test_modified_quote,scripts/test_strategy_qa.py
+5,"원본은 읽기 전용, 변경은 diff와 새 파일로. 기밀 자료 외부 전송·기관 제출·공개 커밋·main 병합은 명시 승인 없이 금지.",SG1,scripts/score.py
+5,"원본은 읽기 전용, 변경은 diff와 새 파일로. 기밀 자료 외부 전송·기관 제출·공개 커밋·main 병합은 명시 승인 없이 금지.",test_verify_package.ManifestQA.test_default_check_rejects_changed_and_unlisted_files,scripts/test_verify_package.py
+6,도구 기본명령은 `config/tool_catalog.json`에 있으며 실제 설치/렌더 결과가 없으면 PASS 단정 금지.,test_score.ScoreTests.test_tool_catalog_rejects_missing_verify,scripts/test_score.py
+7,"최종 상태는 `READY_FOR_HUMAN_REVIEW`, `NEEDS_VERIFICATION`, `SUBMISSION_BLOCKED` 중 하나. 사건별 법률가의 검토가 필요하다.",A3.final_states,scripts/score.py
+7,"최종 상태는 `READY_FOR_HUMAN_REVIEW`, `NEEDS_VERIFICATION`, `SUBMISSION_BLOCKED` 중 하나. 사건별 법률가의 검토가 필요하다.",SG2,scripts/score.py

@@ -16,7 +16,7 @@
 | 계층 | 파일 | 원칙 |
 |---|---|---|
 | L0(항상) | `AGENTS.md` 또는 `CLAUDE.md` | 500~1,000자 수준의 필수 통제 원칙·읽을 곳·기밀규칙 |
-| L1(요청 시) | `docs/01_...V4.md` 등 | 관련 장만 열람, 단순 문체 수정에 전체 연구논문 재전송 금지 |
+| L1(요청 시) | `docs/00_최종_통합마스터_V5.md` 등 | 관련 장만 열람, 단순 문체 수정에 전체 연구논문 재전송 금지 |
 | L2(단계별) | `prompts/P0`~`P8` | 현재 단계 하나만 로드. 복잡한 교차검증은 P8 추가 |
 | L3(업무별) | `cases/<case>/...` | 사건에 필요한 주장ID·증거 인덱스와 **관련 원증거만** 참조 |
 | L4(실시간 델타) | 이번 변경분 + diff | 변경 파일/문단만 우선 재검토, 종횡 영향 받은 연결점만 추가 |
@@ -39,10 +39,13 @@
 - evidence_id: EV-001
 - source_path: private/original/EV-001.pdf
 - exact_location: p.3 lines 5-8
-- validation: original_verified / transcript_only / owner_statement / unverified
+- validation: UNVERIFIED
+- source_kind: 전사본 (원본 대조 필요)
 - legal_rule: LAW-001 (시행일 필수)
 - affected_paragraph: PAR-012
 ```
+
+`validation`은 `docs/00_최종_통합마스터_V5.md` §0의 자료 확인 표기를 따른다. 원본·전사·당사자 진술 등의 출처 종류는 `source_kind`에 별도로 기록한다. 객체 ID는 같은 문서 §1.1, 검사기 필드의 상태값은 §0을 따른다.
 
 ## 4. 프롬프트의 압축은 '정보 제거'와 다르다
 

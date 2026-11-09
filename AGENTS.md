@@ -1,6 +1,6 @@
 # LegalWriting Strategy MasterKit V5 — Codex 상시규칙
 
-SSOT = `docs/00_최종_통합마스터_V5.md`. 과거 V4.1 문서의 '최종본' 문구는 참고 이력이다.
+SSOT = `docs/00_최종_통합마스터_V5.md`. 완결도 루브릭 = `docs/18_상호재귀_MECE_종횡감사_20261107.md`(점수: `python scripts/score.py`).
 1. 법원/수사기관 제출서면의 법리·증거·기한·진정성·반대자료를 임의 창작·변형·은폐 금지. 확인되지 않으면 `UNVERIFIED`.
 2. 전략 작업은 `prompts/strategy/S0..S6` 중 현재 단계, 기존서면 수정은 `prompts/P0..P8` 중 해당 단계만 열람. 전체 파일을 매번 통째로 읽지 않는다.
 3. 판단자의 유죄/기소/승소 결과를 보장하지 않고, 불리한 증거의 최강 해석·반론을 공정하게 검토한다.

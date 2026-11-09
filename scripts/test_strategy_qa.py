@@ -3,7 +3,7 @@
 import copy,json,sys,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from strategy_qa import check
+from strategy_qa import SCHEMA, check
 BASE=json.loads((Path(__file__).resolve().parent.parent/'examples/synthetic_strategy_case.json').read_text(encoding='utf-8'))
 class QA(unittest.TestCase):
     def case(self):return copy.deepcopy(BASE)
@@ -26,4 +26,139 @@ class QA(unittest.TestCase):
         x=self.case();x['paragraphs'][0]['adverse_ids']=[];self.assertTrue(any('PARAGRAPH_ADVERSE_UNREVIEWED' in z for z in check(x)))
     def test_duplicate_id(self):
         x=self.case();x['evidence'].append(copy.deepcopy(x['evidence'][0]));self.assertTrue(any('DUPLICATE_ID' in z for z in check(x)))
+    def test_non_boolean_law_verification(self):
+        x=self.case();x['laws'][0]['verified']='False'
+        self.assertTrue(any('UNVERIFIED_LAW' in z for z in check(x)))
+    def test_non_boolean_evidence_verification(self):
+        x=self.case();x['evidence'][0]['verified']='yes'
+        self.assertTrue(any('UNVERIFIED_EVIDENCE' in z for z in check(x)))
+    def test_quote_without_source(self):
+        x=self.case();x['evidence'][0].pop('exact_quote')
+        self.assertTrue(any('NO_QUOTE_SOURCE' in z for z in check(x)))
+    def test_amount_without_source(self):
+        x=self.case();x['evidence'][0].pop('amount_krw')
+        self.assertTrue(any('NO_AMOUNT_SOURCE' in z for z in check(x)))
+    def test_unverified_adverse_evidence(self):
+        x=self.case();x['evidence'][1]['verified']=False
+        self.assertTrue(any('UNVERIFIED_EVIDENCE' in z for z in check(x)))
+
+    def test_all_mandatory_types_required(self):
+        for table in SCHEMA:
+            if table != 'adverse':
+                with self.subTest(table=table):
+                    x=self.case();x.pop(table)
+                    self.assertTrue(any(z.startswith('MISSING_NODE_TYPE:') for z in check(x)))
+
+    def test_non_mapping_input(self):
+        for value in (None, [], '', 0, False):
+            with self.subTest(value=value):
+                self.assertEqual(check(value), ['EMPTY_RECORD:root'])
+
+    def test_invalid_ids_and_links_do_not_crash(self):
+        for value in (None, {}, [], 1, True, ' '):
+            with self.subTest(value=value):
+                x=self.case();x['facts'][0]['id']=value
+                self.assertTrue(any(z.startswith('INVALID_RECORD:') for z in check(x)))
+                x=self.case();x['paragraphs'][0]['fact_ids']=[value]
+                self.assertTrue(any(z.startswith('INVALID_LINK:') for z in check(x)))
+
+    def test_paragraph_cannot_bypass_argument(self):
+        x=self.case();x['arguments'][0]['evidence_ids']=[]
+        self.assertTrue(any(z.startswith('FORWARD_COVERAGE_GAP:') for z in check(x)))
+
+    def test_reverse_sources_must_match_facts(self):
+        x=self.case();x['paragraphs'][0]['evidence_ids'].append('EV-02')
+        self.assertTrue(any(z.startswith('REVERSE_COVERAGE_GAP:') for z in check(x)))
+
+    def test_disconnected_subgraph(self):
+        x=self.case()
+        x['facts'].append({'id':'FACT-ORPHAN','evidence_ids':['EV-ORPHAN']})
+        x['evidence'].append({'id':'EV-ORPHAN','verified':True})
+        errors=check(x)
+        self.assertIn('ORPHAN_NODE:FACT-ORPHAN', errors)
+        self.assertIn('ORPHAN_NODE:EV-ORPHAN', errors)
+
+    def test_audit_missing_affected_node(self):
+        x=self.case();x['audits'][0]['target_ids'].remove('EV-02')
+        self.assertIn('CHANGE_NOT_REAUDITED:CHG-01', check(x))
+
+    def test_invalid_revision_cannot_reaudit(self):
+        for value in (None, True, '1', 0, -1):
+            with self.subTest(value=value):
+                x=self.case();x['changes'][0]['revision']=value
+                self.assertIn('CHANGE_NOT_REAUDITED:CHG-01', check(x))
+
+    def test_audit_revision_must_be_integer(self):
+        x=self.case();x['audits'][0]['change_revisions']['CHG-01']=True
+        self.assertIn('CHANGE_NOT_REAUDITED:CHG-01', check(x))
+
+    def test_failed_audit_cannot_close(self):
+        x=self.case();x['audits'][0]['state']='FAIL'
+        errors=check(x)
+        self.assertIn('CHANGE_NOT_REAUDITED:CHG-01', errors)
+        self.assertIn('TERMINATION_NO_EXIT:CHG-01', errors)
+
+    def test_valid_rollback(self):
+        x=self.case();x['changes'][0].update(state='ROLLED_BACK',rollback_state='COMPLETED')
+        self.assertEqual(check(x), [])
+
+    def test_incomplete_rollback(self):
+        x=self.case();x['changes'][0].update(state='ROLLED_BACK',rollback_state='PENDING')
+        self.assertIn('TERMINATION_STATE_MISSING:CHG-01', check(x))
+
+    def test_cycle_with_exit(self):
+        x=self.case();x['changes'][0]['next_change_ids']=['CHG-01']
+        self.assertEqual(check(x), [])
+
+    def test_multi_change_cycle_with_and_without_exit(self):
+        x=self.case()
+        other=copy.deepcopy(x['changes'][0]);other.update(id='CHG-02',state='OPEN',next_change_ids=['CHG-01'])
+        x['changes'][0]['next_change_ids']=['CHG-02']
+        x['changes'].append(other)
+        x['audits'][0]['change_revisions']['CHG-02']=1
+        self.assertEqual(check(x), [])
+        x['audits'][0]['terminal']=False
+        errors=check(x)
+        for rid in ('CHG-01','CHG-02'):
+            self.assertIn('CYCLE_WITHOUT_EXIT:'+rid, errors)
+
+
+def apply_fixture(fixture):
+    """Apply explicit synthetic mutations; [] replaces the root record."""
+    x=copy.deepcopy(BASE)
+    for operation in fixture['operations']:
+        path=operation['path']
+        if not path:
+            x=copy.deepcopy(operation['value'])
+            continue
+        parent=x
+        for key in path[:-1]:
+            parent=parent[key]
+        if operation.get('remove'):
+            del parent[path[-1]]
+        else:
+            parent[path[-1]]=copy.deepcopy(operation['value'])
+    return x
+
+
+class AdversarialFixtures(unittest.TestCase):
+    pass
+
+
+FIXTURE_DIR=Path(__file__).resolve().parents[1]/'examples/adversarial_strategy'
+EXPECTED_CODES=json.loads((FIXTURE_DIR/'expected_codes.json').read_text(encoding='utf-8'))['cases']
+FIXTURES=[dict(json.loads(p.read_text(encoding='utf-8')), _file=p.name)
+          for p in sorted(FIXTURE_DIR.glob('*.json')) if p.name != 'expected_codes.json']
+
+
+def fixture_test(fixture):
+    def test(self):
+        codes={error.split(':',1)[0] for error in check(apply_fixture(fixture))}
+        self.assertEqual(codes, set(EXPECTED_CODES[fixture['_file']]))
+        self.assertIn(fixture['expected_code'], codes)
+    return test
+
+
+for fixture in FIXTURES:
+    setattr(AdversarialFixtures, 'test_'+Path(fixture['_file']).stem, fixture_test(fixture))
 if __name__=='__main__':unittest.main()
