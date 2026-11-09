@@ -9,6 +9,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ILLUSTRATIVE_TABLE_LABEL = '형사 표 서식은 예시이며 접수기관 기준을 별도 확인하십시오.'
+
+
+def table_minimum(profile, kind, illustrative=False):
+    if kind == 'criminal' and illustrative:
+        return profile[kind].get('illustrative_table_pt', 12)
+    return max(12, profile[kind].get('table_pt_min', 12))
 
 
 def check_record(record):
@@ -21,11 +28,13 @@ def check_docx(path, kind='civil', profile=None):
 
     Body minimums cover text runs unless common.<story>_pt_min overrides them.
     Configured Title/Heading sizes are exact targets. Font preferences are advice.
+    Footnotes/endnotes are inspected when python-docx exposes their XML element;
+    opaque parts are silently skipped. Absolute spacing is compared to font size.
     """
     from docx import Document
     from docx.enum.style import WD_STYLE_TYPE
     from docx.oxml.ns import qn
-    from docx.shared import Length
+    from docx.shared import Length, Pt
     from docx.text.paragraph import Paragraph
     from docx.text.run import Run
     profile = profile or json.loads((ROOT/'config/style_profile.json').read_text(encoding='utf-8'))
@@ -58,6 +67,12 @@ def check_docx(path, kind='civil', profile=None):
 
     defaults = document.styles.element.xpath('./w:docDefaults/w:rPrDefault/w:rPr/w:sz')
     default_pt = float(defaults[0].get(qn('w:val')))/2 if defaults else 11
+    defaults = document.styles.element.xpath('./w:docDefaults/w:pPrDefault/w:pPr/w:spacing')
+    default_spacing = None
+    if defaults and defaults[0].get(qn('w:line')) is not None:
+        value = float(defaults[0].get(qn('w:line')))
+        default_spacing = (value/240 if defaults[0].get(qn('w:lineRule'), 'auto') == 'auto'
+                           else Pt(value/20))
 
     def role(style):
         seen = set()
@@ -79,11 +94,14 @@ def check_docx(path, kind='civil', profile=None):
                else 'footer_line_spacing_min' if 'footer' in label else 'body_line_spacing_min')
         return common.get(key, spacing_min)
 
-    def check_spacing(value, location, required):
+    def check_spacing(value, location, required, font_pt):
         if required is None:
             return
+        if value is None:
+            value = default_spacing
         if isinstance(value, Length):
-            add('LINE_SPACING_RULE', location, value.pt, f'>={required} lines')
+            if value.pt + .05 < required * font_pt:
+                add('LINE_SPACING', location, value.pt, f'>={required * font_pt:g} pt')
         elif (value if value is not None else 1.0) < required:
             add('LINE_SPACING', location, value, required)
 
@@ -104,6 +122,18 @@ def check_docx(path, kind='civil', profile=None):
             story = getattr(section, name)
             stories.append((label+'.'+name, story, story._element))
 
+    for part in document.part.related_parts.values():
+        name = part.content_type.rsplit('.', 1)[-1]
+        if name in ('footnotes+xml', 'endnotes+xml'):
+            element = getattr(part, 'element', None)
+            if element is None:
+                element = getattr(part, '_element', None)
+            if element is not None:
+                stories.append((name.split('+')[0], document, element))
+    illustrative = any(ILLUSTRATIVE_TABLE_LABEL in ''.join(element.itertext())
+                       for _, _, element in stories)
+    table_min = table_minimum(profile, kind, illustrative)
+
     seen, runs, used, used_min, used_spacing = set(), [], set(), {}, {}
     for label, container, element in stories:
         if element in seen:
@@ -117,7 +147,7 @@ def check_docx(path, kind='civil', profile=None):
                        for r in p.iter(qn('w:r'))):
                 continue
             location = f'{label}.paragraph[{number}]'
-            paragraph_min = common.get('table_pt_min', context_min) if any(
+            paragraph_min = table_min if any(
                 parent.tag == qn('w:tbl') for parent in p.iterancestors()) else context_min
             for table in (parent for parent in p.iterancestors() if parent.tag == qn('w:tbl')):
                 declared = table.xpath('./w:tblPr/w:tblStyle')
@@ -132,7 +162,7 @@ def check_docx(path, kind='civil', profile=None):
                 spacing = inherited(paragraph.style, 'paragraph_format', 'line_spacing')
             spacing_required = spacing_target(paragraph.style, label)
             used_spacing[paragraph.style.style_id] = max(used_spacing.get(paragraph.style.style_id, 0), spacing_required or 0)
-            check_spacing(spacing, location, spacing_required)
+            paragraph_sizes = []
             for index, r in enumerate(p.iter(qn('w:r')), 1):
                 # Nested text boxes have their own paragraph; inspect each run once.
                 parent = r.getparent()
@@ -151,11 +181,13 @@ def check_docx(path, kind='civil', profile=None):
                 if size is None:
                     size = inherited(paragraph.style, 'font', 'size')
                 points = size.pt if size is not None else default_pt
+                paragraph_sizes.append(points)
                 run_location = location+f'.run[{index}]'
                 check_size(points, run_location, paragraph.style, paragraph_min)
                 runs.append(dict(location=run_location, font_pt=points,
                                  font=run.font.name or inherited(run.style,'font','name') or
                                       inherited(paragraph.style,'font','name'), style=run.style.name))
+            check_spacing(spacing, location, spacing_required, max(paragraph_sizes, default=default_pt))
 
     styles = []
     for style in document.styles:
@@ -168,7 +200,8 @@ def check_docx(path, kind='civil', profile=None):
                            minimum if style.name == 'Normal' else used_min.get(style.style_id, minimum))
             if style.type == WD_STYLE_TYPE.PARAGRAPH:
                 check_spacing(inherited(style,'paragraph_format','line_spacing'), 'style['+style.name+']',
-                              used_spacing.get(style.style_id, spacing_target(style)))
+                              used_spacing.get(style.style_id, spacing_target(style)),
+                              points if points is not None else default_pt)
     return dict(status='FAIL' if issues else 'PASS', sections=sections, runs=runs, styles=styles,
                 issues=issues, scope='Profile checks for all sections/text runs and configured/used styles; unused styles inventoried. Rendering NOT_TESTED.')
 

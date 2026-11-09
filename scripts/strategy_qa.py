@@ -33,6 +33,7 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 
@@ -93,9 +94,17 @@ def valid_type(value, kind):
             (kind in ('str', 'list', 'dict') and isinstance(value, {'str':str,'list':list,'dict':dict}[kind])))
 
 
+def nfc(value):
+    return unicodedata.normalize('NFC', value) if isinstance(value, str) else ''
+
+
+def literal_text(value, excerpt):
+    return isinstance(value, str) and isinstance(excerpt, str) and nfc(value) in nfc(excerpt)
+
+
 def literal_amount(value, excerpt):
     return type(value) is int and any(re.search(r'(?<![\d,.\-])' + re.escape(text) +
-        r'(?!\d|[,.]\d|[eE][+-]?\d)', excerpt) is not None for text in {str(value),format(value, ',')})
+        r'(?!\d|[,.]\d|[eE][+-]?\d)', nfc(excerpt)) is not None for text in {str(value),format(value, ',')})
 
 
 # Any digit amount in KRW notation: 2500000원, 2,500,000 KRW, 250만원, 2억5천만 원, ₩2,500,000.
@@ -187,6 +196,11 @@ def check(record):
     def nonblank(row, field):
         return isinstance(row.get(field), str) and bool(row[field].strip())
 
+    for table, field in [('facts', 'text'), ('evidence', 'exact_quote'), ('paragraphs', 'quote')]:
+        for rid, row in tables[table].items():
+            if nonblank(row, field) and len(''.join(nfc(row[field]).split())) < 2:
+                add('TEXT_TOO_SHORT', f'{rid}:{field}')
+
     for table in ('laws', 'evidence'):
         for rid, source in tables[table].items():
             if not nonblank(source, 'source_location'):
@@ -205,7 +219,7 @@ def check(record):
             add('UNVERIFIED_LAW', rid)
         if not nonblank(law, 'source'):
             add('LAW_SOURCE_MISSING', rid)
-        elif not isinstance(law.get('source_excerpt'), str) or law['source'] not in law['source_excerpt']:
+        elif not literal_text(law['source'], law.get('source_excerpt')):
             add('LAW_SOURCE_MISMATCH', rid)
     for rid, evidence in tables['evidence'].items():
         if evidence.get('verified') is not True:
@@ -213,7 +227,7 @@ def check(record):
         excerpt = evidence.get('source_excerpt', '')
         if not isinstance(excerpt, str):
             excerpt = ''
-        if 'exact_quote' in evidence and (not nonblank(evidence, 'exact_quote') or evidence['exact_quote'] not in excerpt):
+        if 'exact_quote' in evidence and (not nonblank(evidence, 'exact_quote') or not literal_text(evidence['exact_quote'], excerpt)):
             add('EVIDENCE_QUOTE_MISMATCH', rid)
         if evidence.get('amount_krw') is not None and not literal_amount(evidence['amount_krw'], excerpt):
             add('EVIDENCE_AMOUNT_MISMATCH', rid)
@@ -221,7 +235,7 @@ def check(record):
         sources = [nodes[e].get('source_excerpt', '') for e in refs(rid, 'evidence_ids')]
         if not nonblank(fact, 'text'):
             add('FACT_TEXT_MISSING', rid)
-        elif not any(isinstance(text, str) and fact['text'] in text for text in sources):
+        elif not any(literal_text(fact['text'], text) for text in sources):
             add('FACT_TEXT_MISMATCH', rid)
     for rid, adverse in tables['adverse'].items():
         for name in ('strongest_reading', 'admitted_fact', 'response'):
@@ -243,9 +257,9 @@ def check(record):
             values = [e['exact_quote'] for e in sources if isinstance(e.get('exact_quote'), str) and e['exact_quote']]
             if not values:
                 add('NO_QUOTE_SOURCE', rid)
-            elif paragraph['quote'] not in values:
+            elif nfc(paragraph['quote']) not in [nfc(value) for value in values]:
                 add('QUOTE_MISMATCH', rid)
-            if not any(isinstance(e.get('source_excerpt'), str) and paragraph['quote'] in e['source_excerpt'] for e in sources):
+            if not any(literal_text(paragraph['quote'], e.get('source_excerpt')) for e in sources):
                 add('QUOTE_EXCERPT_MISMATCH', rid)
         if 'amount_krw' not in paragraph:
             add('PARAGRAPH_AMOUNT_MISSING', rid)
@@ -253,7 +267,7 @@ def check(record):
             if not nonblank(paragraph, 'amount_not_applicable_reason'):
                 add('AMOUNT_APPLICABILITY_MISSING', rid)
             if any(e.get('amount_krw') is not None or (isinstance(e.get('source_excerpt'), str) and
-                   AMOUNT_HINT.search(e['source_excerpt'])) for e in sources):
+                   AMOUNT_HINT.search(nfc(e['source_excerpt']))) for e in sources):
                 add('AMOUNT_MISMATCH', rid)
         else:
             values = [e['amount_krw'] for e in sources if 'amount_krw' in e]

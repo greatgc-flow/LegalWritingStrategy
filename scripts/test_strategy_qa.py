@@ -8,6 +8,24 @@ BASE=json.loads((Path(__file__).resolve().parent.parent/'examples/synthetic_stra
 class QA(unittest.TestCase):
     def case(self):return copy.deepcopy(BASE)
     def test_valid(self):self.assertEqual(check(self.case()),[])
+    def test_nfc_literal_matching_on_either_side(self):
+        import unicodedata
+        for side in ('sources', 'claims'):
+            x=self.case()
+            fields = [('laws','source_excerpt'),('evidence','source_excerpt'),('evidence','exact_quote')] if side=='sources' else [
+                ('laws','source'),('facts','text'),('paragraphs','quote')]
+            for table,field in fields:
+                for row in x[table]:
+                    if field in row:row[field]=unicodedata.normalize('NFD',row[field])
+            self.assertEqual(check(x),[],side)
+
+    def test_short_literal_text_is_rejected_after_nfc(self):
+        import unicodedata
+        for table,field in [('facts','text'),('evidence','exact_quote'),('paragraphs','quote')]:
+            for value in ('가', ' 가 \t', unicodedata.normalize('NFD','각')):
+                x=self.case();x[table][0][field]=value
+                self.assertIn('TEXT_TOO_SHORT:'+x[table][0]['id']+':'+field,check(x))
+
     def test_missing_fact_evidence(self):
         x=self.case();x['facts'][0]['evidence_ids']=['EV-MISSING'];self.assertTrue(any('MISSING_REF' in z for z in check(x)))
     def test_missing_adverse(self):

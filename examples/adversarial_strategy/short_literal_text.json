@@ -1,0 +1,30 @@
+{
+  "scope": "Fully fictional short-text mutation; not legal evidence.",
+  "expected_code": "TEXT_TOO_SHORT",
+  "operations": [
+    {
+      "path": [
+        "facts",
+        0,
+        "text"
+      ],
+      "value": "입"
+    },
+    {
+      "path": [
+        "evidence",
+        0,
+        "exact_quote"
+      ],
+      "value": "입"
+    },
+    {
+      "path": [
+        "paragraphs",
+        0,
+        "quote"
+      ],
+      "value": "입"
+    }
+  ]
+}
