@@ -132,6 +132,85 @@ class TestDocxQA(unittest.TestCase):
         self.document.paragraphs[0].paragraph_format.line_spacing=1.0
         self.assertTrue(any(item['code']=='LINE_SPACING' for item in self.inspect()['issues']))
 
+    def test_civil_table_requires_12pt(self):
+        from docx.shared import Pt
+        run=self.document.add_table(rows=1,cols=1).cell(0,0).paragraphs[0].add_run('Fictional table.')
+        run.font.size=Pt(11)
+        self.assertTrue(any(i['code']=='FONT_SIZE' and i['expected']==12 for i in self.inspect()['issues']))
+        run.font.size=Pt(12)
+        self.assertEqual(self.inspect()['issues'],[])
+
+    def test_delivered_civil_table_text_is_at_least_12pt(self):
+        from docx import Document
+        for path in (root/'templates').glob('*reference.docx'):
+            for table in Document(path).tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for paragraph in cell.paragraphs:
+                            for run in paragraph.runs:
+                                if run.font.size is not None:
+                                    self.assertGreaterEqual(run.font.size.pt,12,path.name)
+
+    def test_criminal_11pt_table_requires_illustrative_label(self):
+        from docx.shared import Pt
+        from legal_qa import ILLUSTRATIVE_TABLE_LABEL
+        self.set_sections('criminal')
+        run=self.document.add_table(rows=1,cols=1).cell(0,0).paragraphs[0].add_run('Fictional table.')
+        run.font.size=Pt(11)
+        self.assertTrue(any(i['code']=='FONT_SIZE' for i in self.inspect('criminal')['issues']))
+        self.document.add_paragraph(ILLUSTRATIVE_TABLE_LABEL)
+        self.assertEqual(self.inspect('criminal')['issues'],[])
+
+    def test_absolute_line_spacing_uses_effective_run_size(self):
+        from docx.enum.text import WD_LINE_SPACING
+        from docx.shared import Pt
+        paragraph=self.document.paragraphs[0]
+        for rule in (WD_LINE_SPACING.EXACTLY,WD_LINE_SPACING.AT_LEAST):
+            for points,passes in [(18,True),(24,True),(17,False)]:
+                paragraph.paragraph_format.line_spacing=Pt(points)
+                paragraph.paragraph_format.line_spacing_rule=rule
+                spacing=[i for i in self.inspect()['issues'] if i['code']=='LINE_SPACING']
+                self.assertEqual(not spacing,passes,(rule,points))
+        paragraph.paragraph_format.line_spacing=Pt(18)
+        paragraph.runs[0].font.size=Pt(14)
+        self.assertTrue(any(i['code']=='LINE_SPACING' for i in self.inspect()['issues']))
+
+    def test_docdefaults_paragraph_spacing_is_honoured(self):
+        from docx.oxml import OxmlElement
+        from docx.oxml.ns import qn
+        self.document.styles['Normal'].paragraph_format.line_spacing=None
+        defaults=self.document.styles.element.xpath('./w:docDefaults')[0]
+        pdefault=OxmlElement('w:pPrDefault');ppr=OxmlElement('w:pPr');spacing=OxmlElement('w:spacing')
+        for old in defaults.findall(qn('w:pPrDefault')):defaults.remove(old)
+        ppr.append(spacing);pdefault.append(ppr);defaults.append(pdefault)
+        for rule,line,passes in [('auto','360',True),('auto','240',False),('exact','360',True),('atLeast','340',False)]:
+            spacing.set(qn('w:lineRule'),rule);spacing.set(qn('w:line'),line)
+            issues=[i for i in self.inspect()['issues'] if i['code']=='LINE_SPACING']
+            self.assertEqual(not issues,passes,(rule,line))
+
+    def test_exposed_footnote_and_endnote_runs_are_checked(self):
+        from docx.opc.part import XmlPart
+        from docx.opc.packuri import PackURI
+        from docx.oxml import parse_xml
+        from unittest.mock import patch
+        for name in ('footnotes','endnotes'):
+            xml=f'<w:{name} xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:r><w:rPr><w:sz w:val="16"/></w:rPr><w:t>Synthetic note</w:t></w:r></w:p></w:{name}>'
+            part=XmlPart(PackURI('/word/'+name+'.xml'),'application/vnd.openxmlformats-officedocument.wordprocessingml.'+name+'+xml',parse_xml(xml),self.document.part.package)
+            self.document.part.relate_to(part,'http://schemas.openxmlformats.org/officeDocument/2006/relationships/'+name)
+        with patch('docx.Document',return_value=self.document):
+            issues=check_docx(self.path,profile=self.profile)['issues']
+        for name in ('footnotes','endnotes'):
+            self.assertTrue(any(i['code']=='FONT_SIZE' and i['location'].startswith(name+'.') for i in issues))
+
+    def test_opaque_note_parts_are_silently_skipped(self):
+        from docx.opc.part import Part
+        from docx.opc.packuri import PackURI
+        from unittest.mock import patch
+        part=Part(PackURI('/word/footnotes.xml'),'application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml',b'',self.document.part.package)
+        self.document.part.relate_to(part,'http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes')
+        with patch('docx.Document',return_value=self.document):
+            self.assertEqual(check_docx(self.path,profile=self.profile)['issues'],[])
+
     def test_configured_style_size_violation(self):
         from docx.shared import Pt
         self.document.styles['Heading 1'].font.size=Pt(10)

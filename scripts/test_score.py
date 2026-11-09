@@ -176,6 +176,10 @@ class ScoreTests(unittest.TestCase):
                     self.assertAlmostEqual(getattr(section,side+'_margin').mm,value,places=1)
                 self.assertAlmostEqual(section.page_width.mm,210,places=1)
                 self.assertAlmostEqual(section.page_height.mm,297,places=1)
+                table=Document(path).tables[0]
+                self.assertEqual({run.font.size.pt for row in table.rows for cell in row.cells
+                                  for paragraph in cell.paragraphs for run in paragraph.runs},
+                                 {12 if civil else 11})
                 self.assertEqual(check_docx(path,'civil' if civil else 'criminal',profile)['issues'],[])
 
     def test_transfer_limits(self):

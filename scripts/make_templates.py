@@ -8,6 +8,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from legal_qa import ILLUSTRATIVE_TABLE_LABEL, table_minimum
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'templates'
@@ -64,6 +65,7 @@ def make_doc(is_civil=True):
         d.add_paragraph('[법률적 요청과 필요한 증거의 위치를 기재]')
         fname='민사_A4_reference.docx'
     else:
+        d.add_paragraph(ILLUSTRATIVE_TABLE_LABEL)
         for txt in ['사건: [사건번호]', '제출기관: [경찰서/검찰청]', '제출자 지위: [신청인/피해자 등 확인]']:
             d.add_paragraph(txt)
         d.add_paragraph('1. 제출 취지','Heading 1')
@@ -92,7 +94,7 @@ def make_doc(is_civil=True):
         for cell in row.cells:
             for p in cell.paragraphs:
                 for r in p.runs:
-                    r.font.name=font;r.font.size=Pt(profile['common']['table_pt_min'])
+                    r.font.name=font;r.font.size=Pt(table_minimum(profile, 'civil' if is_civil else 'criminal', not is_civil))
     d.add_paragraph('작성일: [YYYY-MM-DD]    제출자: [서명 또는 날인 요구 확인]')
     foot=sec.footer.paragraphs[0]
     foot.alignment=WD_ALIGN_PARAGRAPH.CENTER

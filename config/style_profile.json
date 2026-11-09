@@ -6,18 +6,19 @@
     "paper": "A4 portrait",
     "margin_mm": {"top": 45, "bottom": 30, "left": 20, "right": 20},
     "body_pt_min": 12,
+    "table_pt_min": 12,
     "line_spacing": ">=1.5 lines OR 200% in target editor",
     "font_preference": ["Malgun Gothic", "Noto Sans CJK KR", "Source Han Sans KR"]
   },
   "criminal": {
     "authority": "접수기관 공식 서식/지침 우선; 민사소송규칙 제4조 자동 직접적용 금지",
     "illustrative_body_pt": 12,
+    "illustrative_table_pt": 11,
     "illustrative_margin_mm": {"top": 25, "bottom": 25, "left": 22, "right": 22}
   },
   "common": {
     "header_pt_min": 9,
     "footer_pt_min": 8,
-    "table_pt_min": 11,
     "body_line_spacing_min": 1.5,
     "heading_line_spacing_min": 1.0,
     "header_line_spacing_min": 1.0,

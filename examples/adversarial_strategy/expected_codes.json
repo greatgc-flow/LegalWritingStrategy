@@ -199,6 +199,9 @@
     ],
     "visual_required.json": [
       "VISUAL_REQUIRED"
+    ],
+    "short_literal_text.json": [
+      "TEXT_TOO_SHORT"
     ]
   },
   "scope": "Fully fictional exact source/trace errors and a positive plain-brief case."
