@@ -130,6 +130,16 @@ class ScoreTests(unittest.TestCase):
         self.change_csv('references/statute_ledger.csv', lambda rows: rows.pop(0))
         self.assert_broken('A4.statute_ledger')
 
+    def test_statute_hash_is_required_and_hex(self):
+        for value in ('', 'a'*63, 'g'*64, 'a'*65):
+            with self.subTest(value=value):
+                self.change_csv('references/statute_ledger.csv', lambda rows: rows[0].update(text_sha256=value))
+                self.assertIn('NEEDS_VERIFICATION: invalid text_sha256: ST01',score.statute_ledger(self.audit))
+        self.change_csv('references/statute_ledger.csv', lambda rows: rows[0].update(text_sha256='A'*64))
+        self.assertEqual(score.statute_ledger(self.audit),[])
+        self.change_csv('references/statute_ledger.csv', lambda rows:[row.pop('text_sha256') for row in rows])
+        self.assertIn('NEEDS_VERIFICATION: invalid text_sha256: ST01',score.statute_ledger(self.audit))
+
     def test_statute_scan_detects_new_subarticle(self):
         self.write('docs/extra_citation.md', '형법 제1조의2\n')
         self.assert_broken('A4.statute_ledger')
