@@ -34,7 +34,8 @@ def check_docx(path, kind='civil', profile=None):
     minimum = settings['body_pt_min' if kind == 'civil' else 'illustrative_body_pt']
     targets = {'Title':common['title_pt'], 'Heading 1':common['heading1_pt'], 'Heading 2':common['heading2_pt']}
     spacing_policy = settings.get('line_spacing', common.get('line_spacing'))
-    spacing_min = float(re.search(r'>=([0-9.]+)', spacing_policy)[1]) if spacing_policy else common.get('body_line_spacing_min')
+    match = re.search(r'>=([0-9.]+)', spacing_policy or '')
+    spacing_min = float(match[1]) if match else common.get('body_line_spacing_min')
     document, issues = Document(str(path)), []
 
     def add(code, location, actual, expected):

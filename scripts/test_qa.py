@@ -1,4 +1,4 @@
-"""Seven regression tests on synthetic data. These are not legal truth tests."""
+"""Regression tests on synthetic data. These are not legal truth tests."""
 import sys, json, copy, unittest, shutil, subprocess, uuid
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))

@@ -142,6 +142,17 @@ class QA(unittest.TestCase):
         x=self.case();x['evidence'][0]['source_excerpt']=x['evidence'][0]['source_excerpt'].replace('2500000','2,500,000')
         self.assertEqual(check(x),[])
 
+    def test_null_amount_cannot_hide_unit_or_symbol_amounts(self):
+        for excerpt in ('입금 확인 예정; 가상 금액 250만원.', '입금 확인 예정; 가상 금액 2억5천만 원.',
+                        '입금 확인 예정; 가상 금액 ₩2,500,000.', '입금 확인 예정; 가상 금액 2,500,000 KRW.'):
+            with self.subTest(excerpt=excerpt):
+                x=self.case();x['evidence'][0].pop('amount_krw');x['evidence'][0]['source_excerpt']=excerpt
+                x['paragraphs'][0].update(amount_krw=None,amount_not_applicable_reason='synthetic claim of no amount')
+                self.assertIn('AMOUNT_MISMATCH:PAR-01',check(x))
+        x=self.case();x['evidence'][0].pop('amount_krw');x['evidence'][0]['source_excerpt']='입금 확인 예정; 2026년 1월 2일 2쪽.'
+        x['paragraphs'][0].update(amount_krw=None,amount_not_applicable_reason='synthetic message without an amount')
+        self.assertNotIn('AMOUNT_MISMATCH:PAR-01',check(x))
+
     def test_unresolved_items_are_explicit_and_never_override_source_errors(self):
         x=self.case();x['unresolved']=['Synthetic missing bank confirmation.']
         self.assertEqual(check(x),[])
