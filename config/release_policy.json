@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "root_files": ["AGENTS.md", "CLAUDE.md", "README.md", "RELEASE_NOTES.md", "VERSION", "requirements.txt", ".gitattributes", ".gitignore"],
+  "directory_extensions": {
+    "config": [".json"],
+    "docs": [".md"],
+    "prompts": [".md"],
+    "references": [".csv"],
+    "scripts": [".py", ".ps1"],
+    "templates": [".md", ".csv", ".docx", ".pdf"],
+    "examples": [".md", ".json", ".csv", ".py", ".docx", ".png", ".svg", ".dot", ".mmd"],
+    "qa": [".md", ".json", ".txt"]
+  },
+  "blocked_parts": ["private", "secrets", "case_data", "cases", "runs", "logs", "original", "originals", ".git", ".venv", "__pycache__"],
+  "blocked_suffixes": [".zip", ".log", ".tmp", ".bak", ".key", ".pem"],
+  "max_file_bytes": 16777216,
+  "max_total_bytes": 67108864
+}

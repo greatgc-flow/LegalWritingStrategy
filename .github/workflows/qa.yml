@@ -18,6 +18,8 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.safecrlf true
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -32,3 +34,5 @@ jobs:
           python scripts/strategy_qa.py --record examples/synthetic_strategy_case.json
           python scripts/legal_qa.py --record examples/synthetic_case.json
           python scripts/score.py
+          python scripts/mode_plan.py --check
+          python scripts/build_release.py --ref "$GITHUB_SHA" --out "$RUNNER_TEMP/legalwriting-smoke.zip"

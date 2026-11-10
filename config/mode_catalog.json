@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "common_prompt": "prompts/00_공통규칙.md",
+  "stages": {
+    "P0": "prompts/P0_원본동결_작업범위.md",
+    "P1": "prompts/P1_원문_사실_증거색인.md",
+    "P2": "prompts/P2_법리_판례_적용시점.md",
+    "P3": "prompts/P3_반론_대안설명_논리검증.md",
+    "P4": "prompts/P4_목차_쟁점배열_설계.md",
+    "P5": "prompts/P5_사람다운문체_정확교정.md",
+    "P6": "prompts/P6_참고증거_표_도표_대조.md",
+    "P7": "prompts/P7_서식_폰트_출력_검증.md",
+    "P8": "prompts/P8_독립감사_종횡_최종판정.md",
+    "S0": "prompts/strategy/S0_절차_목적_기한.md",
+    "S1": "prompts/strategy/S1_경쟁_사건이론.md",
+    "S2": "prompts/strategy/S2_법률요건_책임.md",
+    "S3": "prompts/strategy/S3_원증거_증명력.md",
+    "S4": "prompts/strategy/S4_불리증거_최강반론.md",
+    "S5": "prompts/strategy/S5_서면구성_인용가능성.md",
+    "S6": "prompts/strategy/S6_독립_전략QA.md"
+  },
+  "modes": [
+    {
+      "id": "NEW",
+      "label": "새글 작성",
+      "prompt": "prompts/modes/NEW.md",
+      "required_inputs": [
+        "document_type",
+        "reader",
+        "requested_outcome",
+        "source_inventory",
+        "procedure_dates"
+      ],
+      "default_steps": [
+        "P0",
+        "S0",
+        "P1",
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "P5",
+        "P6",
+        "P7",
+        "P8"
+      ],
+      "write_scopes": [
+        "drafts",
+        "reviews",
+        "runs"
+      ],
+      "outputs": [
+        "new_draft",
+        "claim_source_map",
+        "unresolved_items",
+        "review_record"
+      ],
+      "editing": "new_draft"
+    },
+    {
+      "id": "REVISE",
+      "label": "기존 문서 수정",
+      "prompt": "prompts/modes/REVISE.md",
+      "required_inputs": [
+        "baseline_version",
+        "source_inventory",
+        "change_scope",
+        "protected_meaning"
+      ],
+      "default_steps": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7",
+        "P8"
+      ],
+      "write_scopes": [
+        "drafts",
+        "reviews",
+        "runs"
+      ],
+      "outputs": [
+        "revised_copy",
+        "change_diff",
+        "impact_review",
+        "unresolved_items"
+      ],
+      "editing": "copy_only"
+    },
+    {
+      "id": "REBUT",
+      "label": "상대 주장·결정 반박",
+      "prompt": "prompts/modes/REBUT.md",
+      "required_inputs": [
+        "opponent_document",
+        "source_inventory",
+        "procedure_dates",
+        "response_scope"
+      ],
+      "default_steps": [
+        "P0",
+        "S0",
+        "P1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "P5",
+        "P6",
+        "P7",
+        "P8"
+      ],
+      "write_scopes": [
+        "drafts",
+        "reviews",
+        "runs"
+      ],
+      "outputs": [
+        "response_matrix",
+        "rebuttal_draft",
+        "unsupported_responses",
+        "review_record"
+      ],
+      "editing": "new_draft"
+    },
+    {
+      "id": "AUDIT",
+      "label": "독립감사",
+      "prompt": "prompts/modes/AUDIT.md",
+      "required_inputs": [
+        "candidate_version",
+        "source_inventory",
+        "legal_source_register",
+        "render_evidence"
+      ],
+      "default_steps": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P6",
+        "P7",
+        "P8",
+        "S6"
+      ],
+      "write_scopes": [
+        "reviews",
+        "runs"
+      ],
+      "outputs": [
+        "findings",
+        "coverage_and_limits",
+        "disagreements",
+        "recheck_requests"
+      ],
+      "editing": "report_only"
+    },
+    {
+      "id": "RESEARCH",
+      "label": "법률조사",
+      "prompt": "prompts/modes/RESEARCH.md",
+      "required_inputs": [
+        "legal_question",
+        "jurisdiction",
+        "relevant_dates",
+        "research_scope"
+      ],
+      "default_steps": [
+        "S0",
+        "P2",
+        "S2",
+        "S4",
+        "S6"
+      ],
+      "write_scopes": [
+        "reviews",
+        "runs"
+      ],
+      "outputs": [
+        "legal_memo",
+        "authority_register",
+        "search_log",
+        "unresolved_items"
+      ],
+      "editing": "report_only"
+    },
+    {
+      "id": "COMPARE",
+      "label": "문서·버전 비교",
+      "prompt": "prompts/modes/COMPARE.md",
+      "required_inputs": [
+        "comparison_targets",
+        "target_versions",
+        "comparison_scope"
+      ],
+      "default_steps": [
+        "P0",
+        "P1",
+        "P3",
+        "P6",
+        "P8"
+      ],
+      "write_scopes": [
+        "reviews",
+        "runs"
+      ],
+      "outputs": [
+        "aligned_differences",
+        "source_locations",
+        "meaning_impact",
+        "unresolved_items"
+      ],
+      "editing": "report_only"
+    }
+  ]
+}
